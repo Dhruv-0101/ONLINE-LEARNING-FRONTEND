@@ -27,6 +27,7 @@ import InstructorRoutes from "./components/AuthRoute/InstructorRoutes";
 import CourseChallengeAnnouncement from "./components/Rewards/CourseChallengeAnnouncement";
 import InstructorRegister from "./components/Admin/adminregister/InstructorRegister";
 import RoleSelectionPage from "./components/Home/RoleSelectionPage";
+import LoginInstructor from "./components/User/LoginInstructor";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -151,6 +152,8 @@ export default function App() {
         <Route element={<InstructorRegister />} path="/InstructorRegister" />
 
         <Route element={<Login />} path="/login" />
+        <Route element={<LoginInstructor />} path="/LoginInstructor" />
+
         <Route
           element={
             <AuthRoute>

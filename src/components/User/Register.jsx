@@ -26,9 +26,9 @@ const Register = () => {
   // Formik setup for form handling
   const formik = useFormik({
     initialValues: {
-      email: "atom@gmail.com",
-      password: "123456",
-      username: "atom",
+      email: "",
+      password: "",
+      username: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -36,7 +36,7 @@ const Register = () => {
         .mutateAsync(values)
         .then((data) => {
           console.log("data", data);
-          // navigate("/login");
+          navigate("/login");
         })
         .catch((error) => {
           console.log("error", error);

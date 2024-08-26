@@ -19,7 +19,7 @@ const validationSchema = Yup.object({
   password: Yup.string().required("Password is required"),
 });
 
-const Login = () => {
+const LoginInstructor = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   //---mutation
@@ -35,9 +35,10 @@ const Login = () => {
       mutation.mutateAsync(values).then((data) => {
         //redirect if user is authenticated
         if (data) {
-          navigate("/student-dashboard");
           //dispatch login action
           dispatch(checkUserAuthStatus());
+          navigate("/instructor-courses");
+
         }
       });
       //reset form
@@ -118,4 +119,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginInstructor;

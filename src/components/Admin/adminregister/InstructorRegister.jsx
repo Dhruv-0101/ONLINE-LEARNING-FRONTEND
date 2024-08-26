@@ -26,9 +26,9 @@ const InstructorRegister = () => {
   // Formik setup for form handling
   const formik = useFormik({
     initialValues: {
-      email: "atom@gmail.com",
-      password: "123456",
-      username: "atom",
+      email: "",
+      password: "",
+      username: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -36,7 +36,7 @@ const InstructorRegister = () => {
         .mutateAsync(values)
         .then((data) => {
           console.log("data", data);
-          navigate("/login");
+          navigate("/LoginInstructor");
         })
         .catch((error) => {
           console.log("error", error);
@@ -80,7 +80,7 @@ const InstructorRegister = () => {
           )}
 
           <Link
-            to="/login"
+            to="/LoginInstructor"
             className="text-sm text-indigo-600 hover:text-indigo-700 transition duration-200 block text-center mb-6"
           >
             Already have an account? <span className="font-medium">Login</span>

@@ -2,9 +2,28 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./RoleSelectionPage.css";
+import { checkUserAuthStatusAPI } from "../../reactQuery/user/usersAPI";
+import { useEffect } from "react";
 
 const RoleSelectionPage = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const data = await checkUserAuthStatusAPI();
+        console.log(data)
+        if (data.isAuthenticated) {
+          // Redirect user to the previous page or home if authenticated
+          navigate(-1); // Go back to the previous page
+        }
+      } catch (error) {
+        console.error("Failed to check authentication status", error);
+      }
+    };
+
+    checkAuthStatus();
+  }, [navigate]);
 
   const handleSelection = (role) => {
     if (role === "student") {

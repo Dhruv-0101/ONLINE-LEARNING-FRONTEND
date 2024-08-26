@@ -29,6 +29,7 @@ export default function PrivateNavbar() {
   //logout handler
   const logoutHandler = () => {
     dispatch(logout());
+    navigate("/")
   };
   const data = {};
 
