@@ -25,6 +25,8 @@ import CourseSections from "./components/Admin/Courses/CourseSections";
 import InstructorNavbar from "./components/Navbar/InstructorNavbar";
 import InstructorRoutes from "./components/AuthRoute/InstructorRoutes";
 import CourseChallengeAnnouncement from "./components/Rewards/CourseChallengeAnnouncement";
+import InstructorRegister from "./components/Admin/adminregister/InstructorRegister";
+import RoleSelectionPage from "./components/Home/RoleSelectionPage";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -55,6 +57,8 @@ export default function App() {
     <BrowserRouter>
       <NavbarComponent />
       <Routes>
+        <Route element={<RoleSelectionPage />} path="/" />
+
         {/* instructor links */}
         <Route
           element={
@@ -128,7 +132,7 @@ export default function App() {
           path="/update-course-section/:sectionId"
         />
 
-        <Route element={<Homepage />} path="/" />
+        <Route element={<Homepage />} path="/home" />
         <Route
           element={<StudentRankList />}
           path="/students-position/:courseId"
@@ -144,6 +148,8 @@ export default function App() {
           path="/start-section/:courseId"
         />
         <Route element={<Register />} path="/register" />
+        <Route element={<InstructorRegister />} path="/InstructorRegister" />
+
         <Route element={<Login />} path="/login" />
         <Route
           element={

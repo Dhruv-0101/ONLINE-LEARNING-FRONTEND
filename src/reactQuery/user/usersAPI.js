@@ -34,6 +34,21 @@ export const registerAPI = async (userData) => {
   );
   return response?.data;
 };
+
+export const registerInstructorAPI = async (userData) => {
+  const response = await axios.post(
+    `${BASE_URL}/users/registerInstructor`,
+    {
+      email: userData?.email,
+      password: userData?.password,
+      username: userData?.username,
+    },
+    {
+      withCredentials: true,
+    }
+  );
+  return response?.data;
+};
 //=======Login=====
 
 export const loginAPI = async (userData) => {

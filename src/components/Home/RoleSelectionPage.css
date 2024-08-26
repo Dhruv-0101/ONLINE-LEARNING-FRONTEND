@@ -1,0 +1,59 @@
+/* src/components/Home/RoleSelectionPage.css */
+.role-selection-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: #fff;
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  .role-selection-container h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .role-selection-container p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .role-buttons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .role-button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .student-button {
+    background-color: #56ccf2;
+  }
+  
+  .instructor-button {
+    background-color: #eb5757;
+  }
+  
+  .role-button:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Keyframes for animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
