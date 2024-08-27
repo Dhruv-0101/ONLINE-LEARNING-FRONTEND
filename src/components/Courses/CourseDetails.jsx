@@ -51,7 +51,7 @@ const CourseDetail = ({ course }) => {
 
   // Get the auth user
   const userProfile = useSelector((state) => state.auth.userProfile);
-  const isStudent = userProfile.role === "student";
+  // const isStudent = userProfile.role === "student";
 
   return (
     <>
