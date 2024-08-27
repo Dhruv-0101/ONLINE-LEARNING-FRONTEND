@@ -2,17 +2,25 @@ import axios from "axios";
 import { BASE_URL } from "../../utils/utils";
 
 //add course
-export const addCourseSectionAPI = async (data) => {
-  const response = await axios.post(
-    `${BASE_URL}/course-sections/${data?.courseId}`,
-    {
-      sectionName: data?.sectionName,
-    },
-    {
-      withCredentials: true,
-    }
-  );
-  return response?.data;
+export const addCourseSectionAPI = async ({ courseId, formData }) => {
+  console.log(courseId, formData);
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/course-sections/${courseId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error adding course section:", error);
+    throw error;
+  }
 };
 //get all course sections
 export const getAllCourseSectionsAPI = async () => {
