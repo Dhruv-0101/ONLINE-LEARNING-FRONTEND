@@ -29,6 +29,7 @@ export default function InstructorNavbar() {
   //logout handler
   const logoutHandler = () => {
     dispatch(logout());
+    navigate("/");
   };
   const data = {};
 
