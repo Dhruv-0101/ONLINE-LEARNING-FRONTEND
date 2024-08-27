@@ -49,7 +49,7 @@ const InstructorRegister = () => {
   //Redirect if a user is login
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      navigate("/dashboard");
+      navigate("/instructor-courses");
     }
   }, [isAuthenticated]);
 

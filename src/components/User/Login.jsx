@@ -5,7 +5,10 @@ import { AiOutlineEye, AiOutlineMail } from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { loginAPI } from "../../reactQuery/user/usersAPI";
+import {
+  checkUserAuthStatusAPI,
+  loginAPI,
+} from "../../reactQuery/user/usersAPI";
 import AlertMessage from "../Alert/AlertMessage";
 import { useDispatch } from "react-redux";
 import { FiMail, FiLock } from "react-icons/fi";
@@ -22,6 +25,22 @@ const validationSchema = Yup.object({
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const data = await checkUserAuthStatusAPI();
+        if (data.isAuthenticated) {
+          navigate(-1);
+        }
+      } catch (error) {
+        console.error("Failed to check authentication status", error);
+      }
+    };
+
+    checkAuthStatus();
+  }, [navigate]);
+
   //---mutation
   const mutation = useMutation({ mutationFn: loginAPI });
   // Formik setup for form handling
