@@ -22,13 +22,14 @@ const ProgressUpdate = () => {
     mutationKey: ["update-course-sections"],
     mutationFn: updateProgressAPI,
   });
-  //Get ongoing course sections
+
+  // Get ongoing course sections
   const ongoingSections = data?.courseProgress?.sections;
 
-  //get ongoing course
+  // Get ongoing course
   const ongoingCourse = data?.courseProgress?.courseId;
 
-  //get the course deatails
+  // Get the course details
   const courseDetails = data?.myCourse?.courseId;
 
   const [sections, setSections] = useState([]);
@@ -69,6 +70,9 @@ const ProgressUpdate = () => {
       });
   };
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading sections!</div>;
+
   return (
     <div className="container mx-auto p-6 bg-white rounded-lg shadow">
       <h2 className="text-3xl font-semibold text-gray-800 mb-6">
@@ -77,7 +81,7 @@ const ProgressUpdate = () => {
 
       {/* Alert messages */}
       {updateProgressMutation.isPending && (
-        <AlertMessage type="loading" message="Enrolling you..." />
+        <AlertMessage type="loading" message="Updating progress..." />
       )}
       {updateProgressMutation.isError && (
         <AlertMessage
@@ -99,25 +103,50 @@ const ProgressUpdate = () => {
       {ongoingSections?.map((section) => (
         <div
           key={section.sectionId?._id}
-          className="flex flex-col md:flex-row items-center justify-between bg-gray-100 p-4 rounded-lg mb-4"
+          className="bg-gray-100 p-4 rounded-lg mb-6"
         >
-          <span className="flex items-center text-lg font-medium text-gray-800 mb-3 md:mb-0">
-            <FaBookOpen className="text-indigo-500 mr-3" />
-            {section.sectionId?.sectionName}
-          </span>
-          <select
-            className="border border-gray-300 rounded px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500"
-            value={section.status}
-            onChange={(e) =>
-              handleProgressChange(section.sectionId, e.target.value)
-            }
-          >
-            <option value="">Select Status</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-            <option value="Paused">Paused</option>
-            <option value="Away">Away</option>
-          </select>
+          <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+            <span className="flex items-center text-lg font-medium text-gray-800 mb-3 md:mb-0">
+              <FaBookOpen className="text-indigo-500 mr-3" />
+              {section.sectionId?.sectionName}
+            </span>
+            <select
+              className="border border-gray-300 rounded px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+              value={section.status}
+              onChange={(e) =>
+                handleProgressChange(section.sectionId, e.target.value)
+              }
+            >
+              <option value="">Select Status</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Paused">Paused</option>
+              <option value="Away">Away</option>
+            </select>
+          </div>
+
+          {/* Video Links */}
+          {section.sectionId?.videos?.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Videos
+              </h3>
+              <ul className="list-disc pl-5">
+                {section.sectionId.videos.map((video, index) => (
+                  <li key={video._id} className="mb-2">
+                    <a
+                      href={video.url}
+                      className="text-blue-500 hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Watch Video {index + 1}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       ))}
     </div>

@@ -7,7 +7,7 @@ import { Link, useParams } from "react-router-dom";
 import AlertMessage from "../Alert/AlertMessage";
 
 const StartSection = () => {
-  //get the course id
+  // Get the course id
   const { courseId } = useParams();
   const { data, error, isLoading } = useQuery({
     queryKey: ["course-sections"],
@@ -18,10 +18,8 @@ const StartSection = () => {
     mutationKey: ["update-course-sections"],
     mutationFn: startSectionAPI,
   });
-  console.log("data", data?.courseProgress);
 
-  //get the sections
-
+  // Get the sections
   const courseSections = data?.courseProgress?.courseId?.sections;
   const [sections, setSections] = useState([]);
 
@@ -31,7 +29,7 @@ const StartSection = () => {
     }
   }, [data]);
 
-  //courseId
+  // Handle progress change
   const handleProgressChange = (sectionId) => {
     const updateData = {
       sectionId: sectionId,
@@ -40,7 +38,7 @@ const StartSection = () => {
 
     updateProgressMutation.mutate(updateData);
   };
-  console.log("error", error);
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading sections!</div>;
 
@@ -64,12 +62,12 @@ const StartSection = () => {
         <AlertMessage type="success" message="Section started successfully!" />
       )}
 
-      {courseSections?.map((section) => {
-        return (
-          <div
-            key={section?._id}
-            className="flex flex-col sm:flex-row items-center justify-between bg-white p-4 rounded-lg mb-4 shadow"
-          >
+      {courseSections?.map((section) => (
+        <div
+          key={section?._id}
+          className="bg-white p-4 rounded-lg mb-6 shadow-md"
+        >
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4">
             <span className="flex items-center font-medium text-gray-800 mb-3 sm:mb-0">
               <FaBookReader className="text-indigo-500 mr-3 text-xl" />
               {section?.sectionName}
@@ -91,8 +89,41 @@ const StartSection = () => {
               </Link>
             </div>
           </div>
-        );
-      })}
+
+          {/* Video Section */}
+          {section?.videos?.length > 0 && (
+            <div>
+              {/* <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Videos
+              </h3> */}
+              <div className="flex flex-wrap -mx-2">
+                {section.videos.map((video, index) => (
+                  <div
+                    key={video._id}
+                    className="w-full sm:w-1/2 md:w-1/4 px-2 mb-4"
+                  >
+                    <div className="relative bg-gray-100 rounded-lg shadow-sm overflow-hidden">
+                      <video
+                        className="w-full h-auto"
+                        controls
+                        src={video.url}
+                      />
+                      <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-lg font-bold px-2 py-1 rounded">
+                        {index + 1}
+                      </div>
+                      <div className="p-2">
+                        <span className="text-lg font-medium text-gray-800">
+                          {video.title}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

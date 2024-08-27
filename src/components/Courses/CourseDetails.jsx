@@ -27,7 +27,7 @@ import { useSelector } from "react-redux";
 const CourseDetail = ({ course }) => {
   const { courseId } = useParams();
 
-  //query to fetch single course
+  // Query to fetch single course
   const {
     data: courseData,
     error,
@@ -36,23 +36,21 @@ const CourseDetail = ({ course }) => {
     queryKey: ["course"],
     queryFn: () => getSingleCourseAPI(courseId),
   });
+  console.log(courseData);
 
-  //start course mutation
-
+  // Start course mutation
   const startCourseMutation = useMutation({
     mutationKey: ["start-course"],
     mutationFn: startCourseAPI,
   });
-  //start course mutation handler
+
+  // Start course mutation handler
   const handleStartCourse = () => {
     startCourseMutation.mutate({ courseId });
   };
 
-  //Get the auth user
-
+  // Get the auth user
   const userProfile = useSelector((state) => state.auth.userProfile);
-
-  // const isInstructor = courseData?.instructor.id === userProfile.id;
   const isStudent = userProfile.role === "student";
 
   return (
@@ -68,7 +66,7 @@ const CourseDetail = ({ course }) => {
             Instructor & Course Info
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-            {/* instructor and course details */}
+            {/* Instructor and course details */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">
                 Instructor
@@ -83,17 +81,17 @@ const CourseDetail = ({ course }) => {
                 Course Stats
               </h3>
               <div className="space-y-3">
-                {/* total students */}
+                {/* Total students */}
                 <p className="flex items-center">
                   <FaUsers className="text-blue-500 mr-2" />
                   <span>{courseData?.students?.length} Students</span>
                 </p>
-                {/* total sections */}
+                {/* Total sections */}
                 <p className="flex items-center">
                   <FaLayerGroup className="text-blue-500 mr-2" />
                   <span>{courseData?.sections?.length} Sections</span>
                 </p>
-                {/* difficulty level */}
+                {/* Difficulty level */}
                 <p className="flex items-center">
                   <span className="font-medium text-blue-500">
                     {courseData?.difficulty}
@@ -118,7 +116,6 @@ const CourseDetail = ({ course }) => {
           <AlertMessage type="success" message="Enrolled successfully!" />
         )}
 
-        {/* Action buttons */}
         {/* Action buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <button
@@ -150,7 +147,8 @@ const CourseDetail = ({ course }) => {
           </Link>
         </div>
       </div>
-      {/* check if it has sections */}
+
+      {/* Check if it has sections */}
       {courseData?.sections?.length > 0 ? (
         <div className="mt-6 mb-6">
           <h2 className="text-3xl text-center font-extrabold text-gray-800 mb-4">
@@ -180,6 +178,33 @@ const CourseDetail = ({ course }) => {
                     </button>
                   </div>
                 </div>
+
+                {/* Video section */}
+                {section.videos && section.videos.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      Videos ({section.videos.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {section.videos.map((video) => (
+                        <div
+                          key={video.public_id}
+                          className="flex items-center space-x-4 p-2 border border-gray-300 rounded-lg"
+                        >
+                          <FaPlay className="text-blue-500" />
+                          <a
+                            href={video.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            Watch Video
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
