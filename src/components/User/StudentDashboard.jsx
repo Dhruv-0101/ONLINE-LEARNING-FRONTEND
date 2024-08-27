@@ -1,18 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React from "react";
 import { FaCheck, FaHourglassStart, FaRegCircle } from "react-icons/fa";
 import { getPrivateUserProfileAPI } from "../../reactQuery/user/usersAPI";
-
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  //react query
+  // React Query
   const { data: coursesData, error } = useQuery({
     queryKey: ["course-sections"],
     queryFn: () => getPrivateUserProfileAPI(),
   });
-  //dispatch
-  const dispatch = useDispatch();
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
@@ -29,8 +26,17 @@ function Dashboard() {
 }
 
 function CourseCard({ course }) {
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleCardClick = () => {
+    navigate(`/courses/${course.courseId}`); // Navigate to course details page
+  };
+
   return (
-    <div className="bg-white transform hover:scale-105 transition duration-500 rounded-2xl overflow-hidden shadow-lg">
+    <div
+      className="bg-white transform hover:scale-105 transition duration-500 rounded-2xl overflow-hidden shadow-lg cursor-pointer"
+      onClick={handleCardClick} // Add click handler
+    >
       <div className="p-6">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
           {course.courseTitle}
