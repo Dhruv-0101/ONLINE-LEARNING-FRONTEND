@@ -53,3 +53,12 @@ export const deleteCourseAPI = async (id) => {
   });
   return response?.data;
 };
+
+//check already enrolled
+export const checkInrolled = async (data) => {
+  console.log(data)
+  const response = await axios.post(`${BASE_URL}/courses/checkinrolled`, data, {
+    withCredentials: true,
+  });
+  return response?.data;
+};

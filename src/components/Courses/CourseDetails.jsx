@@ -1,25 +1,19 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaBookOpen,
   FaUser,
   FaUsers,
   FaLayerGroup,
-  FaStar,
-  FaCalendarAlt,
-  FaChalkboardTeacher,
   FaPlay,
-  FaPlus,
   FaTrophy,
   FaChartLine,
-  FaBookReader,
-  FaPlusCircle,
 } from "react-icons/fa";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   getSingleCourseAPI,
-  startCourseAPI,
+  checkInrolled,
 } from "../../reactQuery/courses/coursesAPI";
 import AlertMessage from "../Alert/AlertMessage";
 import { useSelector } from "react-redux";
@@ -35,15 +29,25 @@ const CourseDetail = ({ course }) => {
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["course"],
+    queryKey: ["course", courseId],
     queryFn: () => getSingleCourseAPI(courseId),
   });
 
-  // Start course mutation (can be removed if not used)
-  // const startCourseMutation = useMutation({
-  //   mutationKey: ["start-course"],
-  //   mutationFn: startCourseAPI,
-  // });
+  const {
+    mutate: checkEnrollment,
+    data: enrollmentData,
+    isLoading: isChecking,
+    isError,
+  } = useMutation({
+    mutationFn: checkInrolled,
+  });
+
+  // Handle enrollment check on component mount
+  useEffect(() => {
+    if (courseId) {
+      checkEnrollment({ courseId });
+    }
+  }, [courseId, checkEnrollment]);
 
   // Start course mutation handler
   const handleStartCourse = () => {
@@ -68,6 +72,11 @@ const CourseDetail = ({ course }) => {
     setIsModalOpen(false);
     setSelectedVideo(null);
   };
+
+  // if (isLoading || isChecking) return <p>Loading...</p>;
+  // if (isError) return <p>Error loading course details</p>;
+
+  const isEnrolled = enrollmentData?.isEnrolled;
 
   return (
     <>
@@ -118,28 +127,23 @@ const CourseDetail = ({ course }) => {
           </div>
         </div>
 
-        {/* Alert messages */}
-        {/* {startCourseMutation.isPending && (
-          <AlertMessage type="loading" message="Enrolling you..." />
-        )}
-        {startCourseMutation.isError && (
-          <AlertMessage
-            type="error"
-            message={startCourseMutation.error?.response?.data?.message}
-          />
-        )}
-        {startCourseMutation.isSuccess && (
-          <AlertMessage type="success" message="Enrolled successfully!" />
-        )} */}
-
         {/* Action buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <button
-            onClick={handleStartCourse}
-            className="flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition duration-200"
-          >
-            <FaPlay className="mr-2" /> Start Tracking Your Progress
-          </button>
+          {isEnrolled ? (
+            <Link
+              to={`/start-section/${courseId}`}
+              className="flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition duration-200"
+            >
+              <FaPlay className="mr-2" /> Keep Learning
+            </Link>
+          ) : (
+            <button
+              onClick={handleStartCourse}
+              className="flex items-center justify-center bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition duration-200"
+            >
+              <FaPlay className="mr-2" /> Start Tracking Your Progress
+            </button>
+          )}
 
           <Link
             to={`/start-section/${courseId}`}
@@ -198,9 +202,6 @@ const CourseDetail = ({ course }) => {
                 {/* Video section */}
                 {section.videos && section.videos.length > 0 && (
                   <div className="mt-4">
-                    {/* <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                      Videos ({section.videos.length})
-                    </h3> */}
                     <div className="space-y-2">
                       {section.videos.map((video) => (
                         <div
@@ -224,19 +225,19 @@ const CourseDetail = ({ course }) => {
       ) : (
         <div className="mt-6">
           <h2 className="text-3xl font-extrabold text-gray-800 mb-4">
-            No Sections Found
+            No Sections Available
           </h2>
-          <p className="text-gray-600">
-            This course doesn't have any sections yet.
+          <p className="text-gray-700">
+            This course doesn't have any sections yet. Please check back later.
           </p>
         </div>
       )}
 
       {/* Video Modal */}
-      {isModalOpen && (
+      {selectedVideo && (
         <VideoModal
-          isOpen={isModalOpen}
           video={selectedVideo}
+          isOpen={isModalOpen}
           onClose={handleCloseModal}
         />
       )}
