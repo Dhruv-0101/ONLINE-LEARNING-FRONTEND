@@ -3,16 +3,13 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
 import { addCourseSectionAPI } from "../../../reactQuery/courseSections/courseSectionsAPI";
-import AlertMessage from "../../Alert/AlertMessage"
-
-const validationSchema = Yup.object({
-  sectionName: Yup.string().required("Section name is required"),
-  videos: Yup.array().of(Yup.mixed().required("A video file is required")),
-});
+import AlertMessage from "../../Alert/AlertMessage";
+import { useState } from "react";
 
 const AddCourseSections = () => {
   const navigate = useNavigate();
   const { courseId } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const mutation = useMutation({
     mutationFn: addCourseSectionAPI,
@@ -21,31 +18,84 @@ const AddCourseSections = () => {
   const formik = useFormik({
     initialValues: {
       sectionName: "",
-      videos: [],
+      videos: [
+        {
+          title: "",
+          file: null,
+        },
+      ],
     },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      console.log("Formik values on submit:", values);
-
-      // Create FormData instance
+    validationSchema: Yup.object({
+      sectionName: Yup.string().required("Section name is required"),
+      videos: Yup.array()
+        .of(
+          Yup.object().shape({
+            title: Yup.string().required("Video title is required"),
+            file: Yup.mixed()
+              .required("Video file is required")
+              .test(
+                "fileType",
+                "Unsupported file format. Please upload a video file.",
+                (value) => {
+                  if (!value) return false;
+                  const supportedFormats = [
+                    "video/mp4",
+                    "video/mov",
+                    "video/avi",
+                    "video/mkv",
+                  ];
+                  return supportedFormats.includes(value.type);
+                }
+              )
+              .test(
+                "fileSize",
+                "File too large. Maximum size is 500MB.",
+                (value) => {
+                  if (!value) return false;
+                  const maxSize = 500 * 1024 * 1024; // 500MB
+                  return value.size <= maxSize;
+                }
+              ),
+          })
+        )
+        .min(1, "At least one video is required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      setIsSubmitting(true);
       const formData = new FormData();
       formData.append("sectionName", values.sectionName);
 
-      // Append video files
-      values.videos.forEach((file) => {
-        formData.append("videos", file);
+      values.videos.forEach((video, index) => {
+        if (video.file) {
+          formData.append("videos", video.file);
+          formData.append(`titles[${index}]`, video.title);
+        }
       });
-      console.log(formData)
 
       try {
-        const data = await mutation.mutateAsync({ courseId, formData });
-        console.log("Section added successfully:", data);
+        await mutation.mutateAsync({ courseId, formData });
+        resetForm();
+        setIsSubmitting(false);
         navigate("/instructor-courses");
       } catch (error) {
         console.error("Error adding section:", error);
+        setIsSubmitting(false);
       }
     },
   });
+
+  const handleAddVideoField = () => {
+    formik.setFieldValue("videos", [
+      ...formik.values.videos,
+      { title: "", file: null },
+    ]);
+  };
+
+  const handleRemoveVideoField = (index) => {
+    const videos = [...formik.values.videos];
+    videos.splice(index, 1);
+    formik.setFieldValue("videos", videos);
+  };
 
   return (
     <div className="flex flex-wrap pb-24 bg-gray-100">
@@ -55,42 +105,51 @@ const AddCourseSections = () => {
             Add Course Section
           </h1>
           <p className="text-gray-600 text-center mb-6">
-            Add a new section to your course. You can add as many sections as
-            you want.
+            Add a new section to your course. You can add multiple videos to
+            this section.
           </p>
-          <form onSubmit={formik.handleSubmit}>
-            {mutation.isPending && (
-              <AlertMessage type="loading" message="Loading..." />
+
+          <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
+            {isSubmitting && (
+              <AlertMessage
+                type="loading"
+                message="Uploading and saving data..."
+              />
             )}
-            {mutation.isError && (
+            {mutation.isError && !isSubmitting && (
               <AlertMessage
                 type="error"
                 message={
-                  mutation?.error?.response?.data?.message ||
-                  mutation?.error?.message
+                  mutation.error.response?.data?.message ||
+                  "An error occurred while creating the section."
                 }
               />
             )}
-            {mutation.isSuccess && (
+            {mutation.isSuccess && !isSubmitting && (
               <AlertMessage
                 type="success"
-                message="Course section added successfully"
+                message="Course section added successfully."
               />
             )}
 
+            {/* Section Name */}
             <div className="mb-6">
               <label
-                className="block text-sm font-medium text-gray-700 mb-2"
                 htmlFor="sectionName"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Section Name
               </label>
               <input
-                className="w-full rounded-lg p-4 border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-orange-200 transition duration-200"
                 type="text"
                 id="sectionName"
-                placeholder="Enter section name"
                 {...formik.getFieldProps("sectionName")}
+                className={`w-full rounded-lg p-4 border ${
+                  formik.touched.sectionName && formik.errors.sectionName
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } focus:outline-none focus:border-indigo-500 transition duration-200`}
+                placeholder="Enter section name"
               />
               {formik.touched.sectionName && formik.errors.sectionName && (
                 <div className="text-red-500 text-sm mt-1">
@@ -99,36 +158,118 @@ const AddCourseSections = () => {
               )}
             </div>
 
-            <div className="mb-6">
-              <label
-                className="block text-sm font-medium text-gray-700 mb-2"
-                htmlFor="videos"
+            {/* Video Fields */}
+            {formik.values.videos.map((video, index) => (
+              <div
+                key={index}
+                className="mb-6 border p-4 rounded-lg bg-gray-50"
               >
-                Upload Videos
-              </label>
-              <input
-                type="file"
-                id="videos"
-                name="videos"
-                multiple
-                onChange={(event) => {
-                  const files = Array.from(event.target.files);
-                  formik.setFieldValue("videos", files);
-                }}
-                className="w-full rounded-lg p-4 border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-orange-200 transition duration-200"
-              />
-              {formik.touched.videos && formik.errors.videos && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.videos}
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold text-gray-700">
+                    Video {index + 1}
+                  </h2>
+                  {formik.values.videos.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveVideoField(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
-              )}
+
+                {/* Video Title */}
+                <div className="mb-4">
+                  <label
+                    htmlFor={`videos[${index}].title`}
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Video Title
+                  </label>
+                  <input
+                    type="text"
+                    id={`videos[${index}].title`}
+                    value={video.title}
+                    onChange={(e) =>
+                      formik.setFieldValue(
+                        `videos[${index}].title`,
+                        e.target.value
+                      )
+                    }
+                    onBlur={formik.handleBlur}
+                    className={`w-full rounded-lg p-4 border ${
+                      formik.touched.videos?.[index]?.title &&
+                      formik.errors.videos?.[index]?.title
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } focus:outline-none focus:border-indigo-500 transition duration-200`}
+                    placeholder="Enter video title"
+                  />
+                  {formik.touched.videos?.[index]?.title &&
+                    formik.errors.videos?.[index]?.title && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.videos[index].title}
+                      </div>
+                    )}
+                </div>
+
+                {/* Video File */}
+                <div>
+                  <label
+                    htmlFor={`videos[${index}].file`}
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Upload Video
+                  </label>
+                  <input
+                    type="file"
+                    id={`videos[${index}].file`}
+                    accept="video/*"
+                    onChange={(event) =>
+                      formik.setFieldValue(
+                        `videos[${index}].file`,
+                        event.currentTarget.files[0]
+                      )
+                    }
+                    onBlur={formik.handleBlur}
+                    className={`w-full p-2 border ${
+                      formik.touched.videos?.[index]?.file &&
+                      formik.errors.videos?.[index]?.file
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } rounded-lg focus:outline-none focus:border-indigo-500 transition duration-200`}
+                  />
+                  {formik.touched.videos?.[index]?.file &&
+                    formik.errors.videos?.[index]?.file && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.videos[index].file}
+                      </div>
+                    )}
+                </div>
+              </div>
+            ))}
+
+            {/* Add Video Button */}
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={handleAddVideoField}
+                className="w-full flex items-center justify-center py-2 px-4 border border-dashed border-indigo-500 text-indigo-500 rounded-lg hover:bg-indigo-50 transition duration-200"
+              >
+                <i className="ri-add-line mr-2"></i> Add Another Video
+              </button>
             </div>
 
+            {/* Submit Button */}
             <button
-              className="h-12 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg w-full transition duration-200 ease-in-out flex items-center justify-center"
               type="submit"
+              disabled={isSubmitting || mutation.isLoading}
+              className="w-full py-3 px-4 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
             >
-              <i className="ri-add-circle-line mr-2"></i> Add Course Section
+              {isSubmitting || mutation.isLoading
+                ? "Submitting..."
+                : "Add Section"}
             </button>
           </form>
         </div>
