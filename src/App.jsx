@@ -28,6 +28,8 @@ import CourseChallengeAnnouncement from "./components/Rewards/CourseChallengeAnn
 import InstructorRegister from "./components/Admin/adminregister/InstructorRegister";
 import RoleSelectionPage from "./components/Home/RoleSelectionPage";
 import LoginInstructor from "./components/User/LoginInstructor";
+import PaymentSuccess from "./components/payment/paymentSuccess";
+import CheckoutForm from "./components/payment/checkout";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -162,6 +164,16 @@ export default function App() {
           }
           path="/student-dashboard"
         />
+
+        <Route
+          element={
+            <AuthRoute>
+              <PaymentSuccess />
+            </AuthRoute>
+          }
+          path="/success"
+        />
+        <Route element={<CheckoutForm />} path="/checkout/:courseId" />
 
         <Route
           element={

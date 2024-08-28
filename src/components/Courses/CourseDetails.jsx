@@ -16,7 +16,7 @@ import {
   FaPlusCircle,
 } from "react-icons/fa";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   getSingleCourseAPI,
   startCourseAPI,
@@ -27,6 +27,7 @@ import VideoModal from "../../utils/modal/VideoModal"; // Import the VideoModal 
 
 const CourseDetail = ({ course }) => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
 
   // Query to fetch single course
   const {
@@ -38,15 +39,15 @@ const CourseDetail = ({ course }) => {
     queryFn: () => getSingleCourseAPI(courseId),
   });
 
-  // Start course mutation
-  const startCourseMutation = useMutation({
-    mutationKey: ["start-course"],
-    mutationFn: startCourseAPI,
-  });
+  // Start course mutation (can be removed if not used)
+  // const startCourseMutation = useMutation({
+  //   mutationKey: ["start-course"],
+  //   mutationFn: startCourseAPI,
+  // });
 
   // Start course mutation handler
   const handleStartCourse = () => {
-    startCourseMutation.mutate({ courseId });
+    navigate(`/checkout/${courseId}`);
   };
 
   // Get the auth user
@@ -118,7 +119,7 @@ const CourseDetail = ({ course }) => {
         </div>
 
         {/* Alert messages */}
-        {startCourseMutation.isPending && (
+        {/* {startCourseMutation.isPending && (
           <AlertMessage type="loading" message="Enrolling you..." />
         )}
         {startCourseMutation.isError && (
@@ -129,7 +130,7 @@ const CourseDetail = ({ course }) => {
         )}
         {startCourseMutation.isSuccess && (
           <AlertMessage type="success" message="Enrolled successfully!" />
-        )}
+        )} */}
 
         {/* Action buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -225,15 +226,17 @@ const CourseDetail = ({ course }) => {
           <h2 className="text-3xl font-extrabold text-gray-800 mb-4">
             No Sections Found
           </h2>
+          <p className="text-gray-600">
+            This course doesn't have any sections yet.
+          </p>
         </div>
       )}
 
       {/* Video Modal */}
-      {selectedVideo && (
+      {isModalOpen && (
         <VideoModal
-          videoUrl={selectedVideo.url}
-          videoTitle={selectedVideo.title}
           isOpen={isModalOpen}
+          video={selectedVideo}
           onClose={handleCloseModal}
         />
       )}
