@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import {
   FaBookOpen,
   FaUser,
@@ -23,6 +23,7 @@ import {
 } from "../../reactQuery/courses/coursesAPI";
 import AlertMessage from "../Alert/AlertMessage";
 import { useSelector } from "react-redux";
+import VideoModal from "../../utils/modal/VideoModal"; // Import the VideoModal component
 
 const CourseDetail = ({ course }) => {
   const { courseId } = useParams();
@@ -36,7 +37,6 @@ const CourseDetail = ({ course }) => {
     queryKey: ["course"],
     queryFn: () => getSingleCourseAPI(courseId),
   });
-  console.log(courseData);
 
   // Start course mutation
   const startCourseMutation = useMutation({
@@ -51,7 +51,22 @@ const CourseDetail = ({ course }) => {
 
   // Get the auth user
   const userProfile = useSelector((state) => state.auth.userProfile);
-  // const isStudent = userProfile.role === "student";
+
+  // State for managing video modal
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Function to open video modal
+  const handleOpenModal = (video) => {
+    setSelectedVideo(video);
+    setIsModalOpen(true);
+  };
+
+  // Function to close video modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedVideo(null);
+  };
 
   return (
     <>
@@ -189,17 +204,13 @@ const CourseDetail = ({ course }) => {
                       {section.videos.map((video) => (
                         <div
                           key={video.public_id}
-                          className="flex items-center space-x-4 p-2 border border-gray-300 rounded-lg"
+                          className="flex items-center space-x-4 p-2 border border-gray-300 rounded-lg cursor-pointer"
+                          onClick={() => handleOpenModal(video)}
                         >
                           <FaPlay className="text-blue-500" />
-                          <a
-                            href={video.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
+                          <span className="text-blue-600 hover:underline">
                             {video.title}
-                          </a>
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -215,6 +226,16 @@ const CourseDetail = ({ course }) => {
             No Sections Found
           </h2>
         </div>
+      )}
+
+      {/* Video Modal */}
+      {selectedVideo && (
+        <VideoModal
+          videoUrl={selectedVideo.url}
+          videoTitle={selectedVideo.title}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
       )}
     </>
   );
