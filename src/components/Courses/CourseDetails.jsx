@@ -63,7 +63,10 @@ const CourseDetail = ({ course }) => {
 
   // Function to open video modal
   const handleOpenModal = (video) => {
-    setSelectedVideo(video);
+    setSelectedVideo({
+      title: video.title,
+      url: video.url, // Assuming video.url contains the video URL
+    });
     setIsModalOpen(true);
   };
 
