@@ -177,7 +177,7 @@ const CourseDetail = ({ course }) => {
               >
                 <div className="flex justify-between items-center">
                   <p className="text-xl font-semibold text-gray-800">
-                    {section.sectionName}
+                    {section.sectionName}({section.videos.length})
                   </p>
                   <div className="flex space-x-2">
                     <Link to={`/update-course-section/${section._id}`}>
@@ -197,9 +197,9 @@ const CourseDetail = ({ course }) => {
                 {/* Video section */}
                 {section.videos && section.videos.length > 0 && (
                   <div className="mt-4">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    {/* <h3 className="text-xl font-semibold text-gray-800 mb-2">
                       Videos ({section.videos.length})
-                    </h3>
+                    </h3> */}
                     <div className="space-y-2">
                       {section.videos.map((video) => (
                         <div
