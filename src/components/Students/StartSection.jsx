@@ -108,14 +108,18 @@ const StartSection = () => {
                         controls
                         src={video.url}
                       />
-                      <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-lg font-bold px-2 py-1 rounded">
-                        {index + 1}
+                      <div
+                        className="absolute top-2 left-2 bg-opacity-50 text-white text-lg font-bold px-2 py-1 rounded"
+                        style={{ color: "#f2f2f2" }}
+                      >
+                        {video.title}
                       </div>
-                      <div className="p-2">
+
+                      {/* <div className="p-2">
                         <span className="text-lg font-medium text-gray-800">
                           {video.title}
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 ))}

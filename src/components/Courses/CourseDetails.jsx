@@ -198,7 +198,7 @@ const CourseDetail = ({ course }) => {
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                           >
-                            Watch Video
+                            {video.title}
                           </a>
                         </div>
                       ))}
