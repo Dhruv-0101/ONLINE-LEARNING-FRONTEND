@@ -28,8 +28,17 @@ export default function PrivateNavbar() {
 
   //logout handler
   const logoutHandler = () => {
+    const userRole = userProfile?.role;
+
     dispatch(logout());
-    navigate("/")
+    // Redirect based on user role
+    if (userRole === "student") {
+      navigate("/home");
+    } else if (userRole === "instructor") {
+      navigate("/");
+    } else {
+      navigate("/");
+    }
   };
   const data = {};
 
