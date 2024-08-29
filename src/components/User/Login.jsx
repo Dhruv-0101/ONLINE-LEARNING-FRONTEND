@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { AiOutlineEye, AiOutlineMail } from "react-icons/ai";
-import { RiLockPasswordLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   checkUserAuthStatusAPI,
   loginAPI,
@@ -25,6 +23,7 @@ const validationSchema = Yup.object({
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loginError, setLoginError] = useState(null);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -42,7 +41,25 @@ const Login = () => {
   }, [navigate]);
 
   //---mutation
-  const mutation = useMutation({ mutationFn: loginAPI });
+  const mutation = useMutation({
+    mutationFn: loginAPI,
+    onError: (error) => {
+      setLoginError(error.response?.data?.message || "Login failed");
+    },
+    onSuccess: (data) => {
+      // Handle login success
+      if (data) {
+        // Check user role
+        if (data.role === "instructor") {
+          setLoginError("This page is not for instructors.");
+        } else {
+          navigate("/student-dashboard");
+          dispatch(checkUserAuthStatus());
+        }
+      }
+    },
+  });
+
   // Formik setup for form handling
   const formik = useFormik({
     initialValues: {
@@ -51,15 +68,7 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      mutation.mutateAsync(values).then((data) => {
-        //redirect if user is authenticated
-        if (data) {
-          navigate("/student-dashboard");
-          //dispatch login action
-          dispatch(checkUserAuthStatus());
-        }
-      });
-      //reset form
+      mutation.mutateAsync(values);
       formik.resetForm();
     },
   });
@@ -72,19 +81,14 @@ const Login = () => {
             Sign In
           </h1>
 
-          {mutation.isError && (
-            <AlertMessage
-              type="error"
-              message={mutation.error.response?.data?.message}
-            />
-          )}
+          {loginError && <AlertMessage type="error" message={loginError} />}
 
-          {mutation.isSuccess && (
+          {/* {mutation.isSuccess && !loginError && (
             <AlertMessage
               type="success"
               message="Login success you will be redirected soon..."
             />
-          )}
+          )} */}
 
           <Link
             to="/register"
