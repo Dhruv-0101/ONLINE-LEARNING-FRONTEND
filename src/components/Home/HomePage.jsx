@@ -22,12 +22,12 @@ const Homepage = () => {
         <h1 className="text-5xl font-bold mb-4">
           Welcome to the Learning Platform
         </h1>
-        <p className="text-xl mb-6">
+        <p className="text-xl mb-2">
           Empower your skills with our comprehensive courses
         </p>
-        <button className="bg-white text-blue-600 px-6 py-2 rounded-md font-bold">
+        {/* <button className="bg-white text-blue-600 px-6 py-2 rounded-md font-bold">
           Explore Courses
-        </button>
+        </button> */}
       </div>
 
       {/* Features Section */}
