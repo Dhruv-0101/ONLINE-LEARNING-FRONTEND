@@ -2,8 +2,15 @@ import React from "react";
 import { FaTrophy, FaClock, FaUserGraduate } from "react-icons/fa";
 import { GiMoneyStack } from "react-icons/gi";
 import { BiBookReader } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 const CourseChallengeAnnouncement = () => {
+  const navigate = useNavigate();
+
+  const handleStartNowClick = () => {
+    navigate("/login"); // Redirect to the login page
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg text-gray-800">
       <div className="flex flex-col items-center text-center">
@@ -47,7 +54,10 @@ const CourseChallengeAnnouncement = () => {
         <p className="italic">
           Note: The winner will be interviewed to assess understanding.
         </p>
-        <button className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-full font-bold hover:bg-blue-700 transition duration-300">
+        <button
+          onClick={handleStartNowClick}
+          className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-full font-bold hover:bg-blue-700 transition duration-300"
+        >
           Start Now
         </button>
       </div>

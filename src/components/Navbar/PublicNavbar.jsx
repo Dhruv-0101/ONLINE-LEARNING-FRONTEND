@@ -173,25 +173,25 @@ export default function PublicNavbar() {
                   >
                     Code & Win
                   </Link>
-                  <Link
-                    to="/courses"
+                  {/* <Link
+                    to="/login"
                     className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                   >
                     Track Your Progress
-                  </Link>
+                  </Link> */}
 
-                  <Link
+                  {/* <Link
                     to="/student-dashboard"
                     className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                   >
                     My Dashboard
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <Link
-                    to="/register"
+                    to="/login"
                     className="relative inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 animate-pulse"
                   >
                     <PlusIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
