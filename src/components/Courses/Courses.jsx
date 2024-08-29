@@ -5,21 +5,23 @@ import {
   FaUser,
   FaUsers,
   FaLayerGroup,
-  FaStar,
-  FaCalendarAlt,
 } from "react-icons/fa";
-import { getAllCoursesAPI } from "../../reactQuery/courses/coursesAPI";
+import {
+  checkAllCourseEnrolled,
+  getAllCoursesAPI,
+} from "../../reactQuery/courses/coursesAPI";
 import { Link } from "react-router-dom";
 import AlertMessage from "../Alert/AlertMessage";
-import { useSelector } from "react-redux";
 
 const Courses = () => {
   const { data, error, isLoading, isError } = useQuery({
     queryKey: ["courses"],
     queryFn: getAllCoursesAPI,
   });
-  const { isAuthenticated, userProfile } = useSelector((state) => state.auth);
-  console.log(userProfile._id)
+  const { data: enrolledCourses } = useQuery({
+    queryKey: ["courses-check"],
+    queryFn: checkAllCourseEnrolled,
+  });
 
   // show loading
   if (isLoading) {
@@ -34,6 +36,12 @@ const Courses = () => {
       />
     );
   }
+
+  // Helper function to check if the user is enrolled in the course
+  const isEnrolled = (courseId) => {
+    return enrolledCourses?.some((enrolledCourse) => enrolledCourse._id === courseId);
+  };
+
   return (
     <div className="container mx-auto p-8 bg-gray-200">
       <div className="text-center mb-10">
@@ -88,8 +96,8 @@ const Courses = () => {
                       <FaLayerGroup className="text-blue-600" />
                       <span>{course?.sections?.length} Sections</span>
                     </span>
-                    <span className="text-green-500 font-medium">
-                      Enroll Now
+                    <span className={`font-medium ${isEnrolled(course._id) ? 'text-green-500' : 'text-blue-500'}`}>
+                      {isEnrolled(course._id) ? 'Enrolled' : 'Explore Now'}
                     </span>
                   </div>
                 </div>
