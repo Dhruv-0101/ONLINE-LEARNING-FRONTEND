@@ -148,12 +148,14 @@ const CourseDetail = ({ course }) => {
             </button>
           )}
 
-          <Link
-            to={`/start-section/${courseId}`}
-            className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
-          >
-            <FaBookOpen className="mr-2" /> Start Course Section
-          </Link>
+          {isEnrolled && (
+            <Link
+              to={`/start-section/${courseId}`}
+              className="flex items-center justify-center bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+            >
+              <FaBookOpen className="mr-2" /> Start Course Section
+            </Link>
+          )}
 
           <Link
             to={`/progress-update/${courseId}`}
@@ -209,13 +211,21 @@ const CourseDetail = ({ course }) => {
                       {section.videos.map((video) => (
                         <div
                           key={video.public_id}
-                          className="flex items-center space-x-4 p-2 border border-gray-300 rounded-lg cursor-pointer"
-                          onClick={() => handleOpenModal(video)}
+                          className={`flex items-center space-x-4 p-2 border border-gray-300 rounded-lg ${
+                            isEnrolled ? "cursor-pointer" : ""
+                          }`}
+                          onClick={
+                            isEnrolled ? () => handleOpenModal(video) : null
+                          }
                         >
                           <FaPlay className="text-blue-500" />
-                          <span className="text-blue-600 hover:underline">
-                            {video.title}
-                          </span>
+                          {isEnrolled ? (
+                            <span className="text-blue-600 hover:underline">
+                              {video.title}
+                            </span>
+                          ) : (
+                            <span className="text-gray-600">{video.title}</span>
+                          )}
                         </div>
                       ))}
                     </div>
