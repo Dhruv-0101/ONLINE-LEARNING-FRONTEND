@@ -190,7 +190,7 @@ const CourseDetail = ({ course }) => {
                     {section.sectionName}({section.videos.length})
                   </p>
                   <div className="flex space-x-2">
-                    <Link to={`/update-course-section/${section._id}`}>
+                    {/* <Link to={`/update-course-section/${section._id}`}>
                       <button className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-200">
                         <FiEdit2 size={18} />
                       </button>
@@ -200,7 +200,7 @@ const CourseDetail = ({ course }) => {
                       className="flex items-center justify-center p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-200"
                     >
                       <FiTrash2 size={18} />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 

@@ -11,12 +11,15 @@ import {
 import { getAllCoursesAPI } from "../../reactQuery/courses/coursesAPI";
 import { Link } from "react-router-dom";
 import AlertMessage from "../Alert/AlertMessage";
+import { useSelector } from "react-redux";
 
 const Courses = () => {
   const { data, error, isLoading, isError } = useQuery({
     queryKey: ["courses"],
     queryFn: getAllCoursesAPI,
   });
+  const { isAuthenticated, userProfile } = useSelector((state) => state.auth);
+  console.log(userProfile._id)
 
   // show loading
   if (isLoading) {
