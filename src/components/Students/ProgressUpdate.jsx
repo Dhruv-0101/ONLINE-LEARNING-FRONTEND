@@ -17,6 +17,7 @@ const ProgressUpdate = () => {
     queryKey: ["course-sections"],
     queryFn: () => getUserProfileAPI(courseId),
   });
+  console.log(data);
 
   const updateProgressMutation = useMutation({
     mutationKey: ["update-course-sections"],
@@ -140,7 +141,7 @@ const ProgressUpdate = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Watch Video {index + 1}
+                      {index + 1}. {video.title}
                     </a>
                   </li>
                 ))}
