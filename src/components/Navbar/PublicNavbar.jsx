@@ -163,13 +163,13 @@ export default function PublicNavbar() {
                 <div className="hidden md:ml-6 md:flex md:space-x-8">
                   <Link
                     to="/"
-                    className="inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
+                    className="inline-flex items-center  border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
                   >
                     Home
                   </Link>
                   <Link
                     to="/reward-challenge"
-                    className="inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
+                    className="inline-flex items-center  border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
                   >
                     Code & Win
                   </Link>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaLaptopCode,
   FaUserGraduate,
@@ -6,6 +7,14 @@ import {
 } from "react-icons/fa";
 
 const Homepage = () => {
+  const navigate = useNavigate();
+
+  const handleSignUpClick = () => {
+    navigate("/register"); // Navigate to the registration page
+  };
+
+
+
   return (
     <div>
       {/* Hero Section */}
@@ -59,7 +68,10 @@ const Homepage = () => {
         <h2 className="text-3xl font-bold mb-4">
           Start Your Learning Journey Today
         </h2>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-md font-bold">
+        <button
+          onClick={handleSignUpClick}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md font-bold"
+        >
           Sign Up Now
         </button>
       </div>
