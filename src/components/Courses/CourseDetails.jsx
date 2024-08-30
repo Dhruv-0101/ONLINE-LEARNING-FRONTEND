@@ -172,6 +172,16 @@ const CourseDetail = ({ course }) => {
           >
             <FaTrophy className="mr-2" /> Students Ranking
           </Link>
+          {isEnrolled && courseData?.communityLink && (
+            <a
+              href={courseData.communityLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center bg-purple-500 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+            >
+              Community
+            </a>
+          )}
         </div>
       </div>
 

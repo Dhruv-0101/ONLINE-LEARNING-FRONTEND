@@ -15,6 +15,10 @@ const validationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
   difficulty: Yup.string().required("Difficulty is required"),
   duration: Yup.number().required("Duration is required"),
+  communityLink: Yup.string()
+    .url("Invalid URL")
+    .required("Community link is required"),
+  price: Yup.number().required("price is required"),
 });
 
 const AddCourse = () => {
@@ -29,6 +33,8 @@ const AddCourse = () => {
       description: "",
       difficulty: "",
       duration: "",
+      communityLink: "",
+      price: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -156,6 +162,42 @@ const AddCourse = () => {
             {formik.touched.duration && formik.errors.duration && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.duration}
+              </div>
+            )}
+
+            {/* Community Link input */}
+            <label
+              className="block text-lg font-semibold mb-2"
+              htmlFor="communityLink"
+            >
+              Community Link
+            </label>
+            <input
+              className="w-full rounded-lg p-3 outline-none border border-gray-300 shadow-sm placeholder-gray-500 focus:ring focus:ring-orange-300 transition duration-200 mb-4"
+              type="url"
+              placeholder="Enter community link"
+              {...formik.getFieldProps("communityLink")}
+            />
+            {formik.touched.communityLink && formik.errors.communityLink && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.communityLink}
+              </div>
+            )}
+
+            {/* Price input */}
+            <label className="block text-lg font-semibold mb-2" htmlFor="price">
+              Price
+            </label>
+            <input
+              className="w-full rounded-lg p-3 outline-none border border-gray-300 shadow-sm placeholder-gray-500 focus:ring focus:ring-orange-300 transition duration-200 mb-4"
+              type="number"
+              id="price"
+              placeholder="Enter price"
+              {...formik.getFieldProps("price")}
+            />
+            {formik.touched.price && formik.errors.price && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.price}
               </div>
             )}
 
