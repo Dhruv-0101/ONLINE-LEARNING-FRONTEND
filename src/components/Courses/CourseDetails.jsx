@@ -231,12 +231,14 @@ const CourseDetail = ({ course }) => {
                             )}
                           </div>
                           {/* Button to explore comments */}
-                          <button
-                            onClick={() => handleViewComments(video._id)}
-                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-3 rounded"
-                          >
-                            View Comments
-                          </button>
+                          {isEnrolled && (
+                            <button
+                              onClick={() => handleViewComments(video._id)}
+                              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-3 rounded"
+                            >
+                              View Comments
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
