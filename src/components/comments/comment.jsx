@@ -7,6 +7,7 @@ import {
   replyToCommentAPI,
 } from "../../reactQuery/courseSections/courseSectionsAPI";
 import { format } from "date-fns"; // Import date-fns for formatting
+import { FaRegClock } from "react-icons/fa"; // Import watch icon
 
 const CommentsPage = () => {
   const { videoId } = useParams();
@@ -165,13 +166,19 @@ const CommentsPage = () => {
               <div className="flex flex-col">
                 {/* Comment Creator and Reply Button */}
                 <div className="flex justify-between items-center mb-2">
-                  <div>
+                  <div className="flex-grow">
                     <p className="text-gray-800">{comment.commentText}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <FaRegClock className="text-gray-500" />
                     <p className="text-gray-600 text-sm">
-                      By {comment.user.username} on{" "}
+                      commented By {comment.user.username} on{" "}
                       {format(new Date(comment.createdAt), "PPPpp")}
                     </p>
                   </div>
+                </div>
+
+                <div className="flex justify-between items-center">
                   <button
                     onClick={() => toggleReplyInput(comment._id)}
                     className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-1 px-4 rounded transition duration-200"
@@ -184,7 +191,7 @@ const CommentsPage = () => {
                 {showReplyInput[comment._id] && (
                   <form
                     onSubmit={(e) => handleReplySubmit(comment._id, e)}
-                    className="mb-4"
+                    className="mt-4"
                   >
                     <textarea
                       value={replies[comment._id] || ""}
@@ -214,13 +221,18 @@ const CommentsPage = () => {
                           key={reply._id}
                           className="bg-gray-100 p-3 border border-gray-200 rounded-lg"
                         >
-                          <p className="text-gray-800 mb-1">
-                            {reply.replyText}
-                          </p>
-                          <p className="text-gray-600 text-sm">
-                            By {reply.user.username} on{" "}
-                            {format(new Date(reply.createdAt), "PPPpp")}
-                          </p>
+                          <div className="flex justify-between items-center mb-1">
+                            <p className="text-gray-800 mb-1">
+                              {reply.replyText}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <FaRegClock className="text-gray-500" />
+                              <p className="text-gray-600 text-sm">
+                                Replied By {reply.user.username} on{" "}
+                                {format(new Date(reply.createdAt), "PPPpp")}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       ))}
 
