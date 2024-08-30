@@ -25,7 +25,6 @@ const Courses = () => {
     queryKey: ["courses-check"],
     queryFn: checkAllCourseEnrolled,
   });
-  console.log(data);
 
   // Show loading
   if (isLoading) {
@@ -139,27 +138,36 @@ const Courses = () => {
                 </div>
               </div>
               {/* Reviews section */}
-              <div className="bg-gray-100 border-t border-gray-300 p-4 flex justify-between items-center">
-                <div className="text-sm">
+              <div className="bg-gray-100 border-t border-gray-300 p-4 flex">
+                {/* Reviews Details */}
+                <div className="flex-grow">
                   <h4 className="text-lg font-semibold mb-2">Reviews</h4>
-                  <div className="flex items-center">
+                  <div className="flex items-center mb-2">
                     {renderStars(course?.averageRating || 0)}
                     <span className="ml-2 text-gray-600">
                       ({course?.totalReviews || 0} reviews)
                     </span>
                   </div>
+                  <div className="text-left text-70px font-bold text-gray-700">
+                    Average Rating: {course?.averageRating || "N/A"}
+                  </div>
                 </div>
-                {/* Leave a review button */}
-                {isEnrolled(course._id) && (
-                  <div>
+                {/* Actions */}
+                <div className="ml-4 flex flex-col space-y-3">
+                  {/* Price */}
+                  <div className="text-lg font-bold text-gray-800">
+                    Price: ${course?.price || "N/A"}
+                  </div>
+                  {/* Leave a review button */}
+                  {isEnrolled(course._id) && (
                     <Link
                       to={`/courses/review/${course._id}`}
-                      className="inline-block px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+                      className="inline-block px-5 py-3 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
                     >
                       Leave a Review
                     </Link>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </Link>
