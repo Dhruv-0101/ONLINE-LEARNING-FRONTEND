@@ -76,8 +76,10 @@ const CourseDetail = ({ course }) => {
     setSelectedVideo(null);
   };
 
-  // if (isLoading || isChecking) return <p>Loading...</p>;
-  // if (isError) return <p>Error loading course details</p>;
+  // Function to navigate to the comments page for a specific video
+  const handleViewComments = (videoId) => {
+    navigate(`/video/comments/${videoId}`);
+  };
 
   const isEnrolled = enrollmentData?.isEnrolled;
 
@@ -187,7 +189,7 @@ const CourseDetail = ({ course }) => {
               >
                 <div className="flex justify-between items-center">
                   <p className="text-xl font-semibold text-gray-800">
-                    {section.sectionName}({section.videos.length})
+                    {section.sectionName} ({section.videos.length})
                   </p>
                   <div className="flex space-x-2">
                     {/* <Link to={`/update-course-section/${section._id}`}>
@@ -211,21 +213,30 @@ const CourseDetail = ({ course }) => {
                       {section.videos.map((video) => (
                         <div
                           key={video.public_id}
-                          className={`flex items-center space-x-4 p-2 border border-gray-300 rounded-lg ${
-                            isEnrolled ? "cursor-pointer" : ""
-                          }`}
-                          onClick={
-                            isEnrolled ? () => handleOpenModal(video) : null
-                          }
+                          className="flex items-center justify-between p-2 border border-gray-300 rounded-lg"
                         >
-                          <FaPlay className="text-blue-500" />
-                          {isEnrolled ? (
-                            <span className="text-blue-600 hover:underline">
-                              {video.title}
-                            </span>
-                          ) : (
-                            <span className="text-gray-600">{video.title}</span>
-                          )}
+                          <div className="flex items-center space-x-4">
+                            <FaPlay className="text-blue-500" />
+                            {isEnrolled ? (
+                              <span
+                                className="text-blue-600 hover:underline cursor-pointer"
+                                onClick={() => handleOpenModal(video)}
+                              >
+                                {video.title}
+                              </span>
+                            ) : (
+                              <span className="text-gray-600">
+                                {video.title}
+                              </span>
+                            )}
+                          </div>
+                          {/* Button to explore comments */}
+                          <button
+                            onClick={() => handleViewComments(video._id)}
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1 px-3 rounded"
+                          >
+                            View Comments
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -249,9 +260,9 @@ const CourseDetail = ({ course }) => {
       {/* Video Modal */}
       {selectedVideo && (
         <VideoModal
-          video={selectedVideo}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+          video={selectedVideo}
         />
       )}
     </>

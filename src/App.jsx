@@ -30,6 +30,7 @@ import RoleSelectionPage from "./components/Home/RoleSelectionPage";
 import LoginInstructor from "./components/User/LoginInstructor";
 import PaymentSuccess from "./components/payment/paymentSuccess";
 import CheckoutForm from "./components/payment/checkout";
+import CommentsPage from "./components/comments/comment";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -133,6 +134,14 @@ export default function App() {
             </AuthRoute>
           }
           path="/update-course-section/:sectionId"
+        />
+        <Route
+          element={
+            <AuthRoute>
+              <CommentsPage />
+            </AuthRoute>
+          }
+          path="/video/comments/:videoId"
         />
 
         <Route element={<Homepage />} path="/home" />

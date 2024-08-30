@@ -77,3 +77,40 @@ export const getSingleSectionAPI = async (id) => {
   });
   return response?.data;
 };
+
+export const postCommentAPI = async (videoId, commentText) => {
+  const response = await axios.post(
+    `${BASE_URL}/course-sections/videos/comments`,
+    {
+      videoId,
+      commentText,
+    },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+
+export const getCommentsAPI = async (videoId) => {
+  const response = await axios.post(
+    `${BASE_URL}/course-sections/videos/getcomments/${videoId}`,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data;
+};
+
+export const replyToCommentAPI = async (commentId, replyText) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/course-sections/videos/comments/reply/${commentId}`,
+      { replyText },
+      { withCredentials: true } // Include credentials (e.g., cookies) if needed
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error replying to comment:", error);
+    throw error; // Rethrow error to be handled by the calling function
+  }
+};
