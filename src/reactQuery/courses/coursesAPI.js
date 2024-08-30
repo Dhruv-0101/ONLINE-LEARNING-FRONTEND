@@ -73,3 +73,17 @@ export const checkAllCourseEnrolled = async () => {
   );
   return response?.data;
 };
+
+export const submitReview = async (courseId, reviewData) => {
+  const response = await axios.post(
+    `${BASE_URL}/courses/createreview/${courseId}`,
+    {
+      message: reviewData.reviewText,
+      rating: reviewData.rating,
+    },
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data;
+};

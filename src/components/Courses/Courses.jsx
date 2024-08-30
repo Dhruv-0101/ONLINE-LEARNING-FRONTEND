@@ -5,6 +5,8 @@ import {
   FaUser,
   FaUsers,
   FaLayerGroup,
+  FaStar,
+  FaStarHalfAlt,
 } from "react-icons/fa";
 import {
   checkAllCourseEnrolled,
@@ -18,16 +20,19 @@ const Courses = () => {
     queryKey: ["courses"],
     queryFn: getAllCoursesAPI,
   });
+
   const { data: enrolledCourses } = useQuery({
     queryKey: ["courses-check"],
     queryFn: checkAllCourseEnrolled,
   });
+  console.log(data);
 
-  // show loading
+  // Show loading
   if (isLoading) {
     return <AlertMessage type="loading" message="Loading courses..." />;
   }
-  // show error
+
+  // Show error
   if (isError) {
     return (
       <AlertMessage
@@ -39,7 +44,28 @@ const Courses = () => {
 
   // Helper function to check if the user is enrolled in the course
   const isEnrolled = (courseId) => {
-    return enrolledCourses?.some((enrolledCourse) => enrolledCourse._id === courseId);
+    return enrolledCourses?.some(
+      (enrolledCourse) => enrolledCourse._id === courseId
+    );
+  };
+
+  // Helper function to render star ratings
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 !== 0;
+    const emptyStars = 5 - Math.ceil(rating);
+
+    return (
+      <>
+        {[...Array(fullStars)].map((_, i) => (
+          <FaStar key={`full-${i}`} className="text-yellow-500" />
+        ))}
+        {halfStar && <FaStarHalfAlt className="text-yellow-500" />}
+        {[...Array(emptyStars)].map((_, i) => (
+          <FaStar key={`empty-${i}`} className="text-gray-300" />
+        ))}
+      </>
+    );
   };
 
   return (
@@ -60,14 +86,18 @@ const Courses = () => {
             to={`/courses/${course._id}`}
             className="no-underline transform hover:scale-105 transition duration-300"
           >
-            <div className="bg-white shadow-xl rounded-xl overflow-hidden hover:shadow-2xl">
-              <div className="p-6">
-                <div className="text-center">
-                  <FaBookOpen className="mx-auto text-blue-600 text-7xl mb-6" />
-                  <h3 className="text-3xl font-bold mb-3 text-gray-800">
+            <div className="bg-white shadow-xl rounded-xl overflow-hidden flex flex-col h-full">
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-3xl font-bold text-gray-800 truncate">
                     {course?.title}
                   </h3>
-                  <p className="text-gray-700 mb-4">{course.description}</p>
+                </div>
+                <div className="text-center mb-4 flex-grow">
+                  <FaBookOpen className="mx-auto text-blue-600 text-7xl mb-6" />
+                  <p className="text-gray-700 mb-4 truncate">
+                    {course.description}
+                  </p>
                 </div>
                 <div className="text-sm space-y-3">
                   {/* Instructor */}
@@ -96,11 +126,40 @@ const Courses = () => {
                       <FaLayerGroup className="text-blue-600" />
                       <span>{course?.sections?.length} Sections</span>
                     </span>
-                    <span className={`font-medium ${isEnrolled(course._id) ? 'text-green-500' : 'text-blue-500'}`}>
-                      {isEnrolled(course._id) ? 'Enrolled' : 'Explore Now'}
+                    <span
+                      className={`font-medium ${
+                        isEnrolled(course._id)
+                          ? "text-green-500"
+                          : "text-blue-500"
+                      }`}
+                    >
+                      {isEnrolled(course._id) ? "Enrolled" : "Explore Now"}
                     </span>
                   </div>
                 </div>
+              </div>
+              {/* Reviews section */}
+              <div className="bg-gray-100 border-t border-gray-300 p-4 flex justify-between items-center">
+                <div className="text-sm">
+                  <h4 className="text-lg font-semibold mb-2">Reviews</h4>
+                  <div className="flex items-center">
+                    {renderStars(course?.averageRating || 0)}
+                    <span className="ml-2 text-gray-600">
+                      ({course?.totalReviews || 0} reviews)
+                    </span>
+                  </div>
+                </div>
+                {/* Leave a review button */}
+                {isEnrolled(course._id) && (
+                  <div>
+                    <Link
+                      to={`/courses/review/${course._id}`}
+                      className="inline-block px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+                    >
+                      Leave a Review
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </Link>

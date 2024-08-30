@@ -31,6 +31,7 @@ import LoginInstructor from "./components/User/LoginInstructor";
 import PaymentSuccess from "./components/payment/paymentSuccess";
 import CheckoutForm from "./components/payment/checkout";
 import CommentsPage from "./components/comments/comment";
+import ReviewForm from "./components/review/ReviewForm";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -142,6 +143,14 @@ export default function App() {
             </AuthRoute>
           }
           path="/video/comments/:videoId"
+        />
+         <Route
+          element={
+            <AuthRoute>
+              <ReviewForm />
+            </AuthRoute>
+          }
+          path="/courses/review/:courseId"
         />
 
         <Route element={<Homepage />} path="/home" />

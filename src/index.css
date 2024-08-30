@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Slider Container */
+.slider-container {
+  width: 100%;
+  margin: 20px 0;
+  position: relative; /* Add relative positioning */
+}
+
+/* Slider Track */
+.slider-track {
+  background-color: #e0f2f1;
+  height: 8px; /* Adjust height as needed */
+  border-radius: 4px; /* For rounded edges */
+}
+
+/* Slider Thumb */
+.slider-thumb {
+  background-color: #007bff;
+  width: 24px; /* Size of the thumb */
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #0056b3; /* Border color for thumb */
+  position: absolute; /* Position absolutely within the container */
+  top: 3px; /* Adjust to position the thumb above the track */
+  transform: translateY(-50%); /* Center the thumb vertically */
+}
+
+/* Textarea Styles */
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #007bff; /* Correct CSS property for ring effect */
+}
