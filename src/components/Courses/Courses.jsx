@@ -74,7 +74,7 @@ const Courses = () => {
           Explore Our Courses
         </h2>
         <p className="text-lg text-gray-700">
-          Select a course you have enrolled with Masynctech and start keeping
+          Select a course you have enrolled with E-Learning and start keeping
           track of your progress.
         </p>
       </div>

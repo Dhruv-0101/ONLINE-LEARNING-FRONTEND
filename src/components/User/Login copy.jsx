@@ -67,7 +67,7 @@ const Login = () => {
               to="/register"
               className="inline-block text-gray-500 hover: transition duration-200 mb-8"
             >
-              <span>New to Masync Blog? </span>
+              <span>New to E-Learnign Blog? </span>
               <span />
               <span className="font-bold font-heading">Create new account</span>
             </Link>
@@ -78,7 +78,7 @@ const Login = () => {
               id="email"
               {...formik.getFieldProps("email")}
               className="w-full rounded-full p-4 outline-none border border-gray-100 shadow placeholder-gray-500 focus:ring focus:ring-orange-200 transition duration-200 mb-1"
-              placeholder="masync@email.com"
+              placeholder="dummy@email.com"
             />
             {formik.touched.email && formik.errors.email && (
               <div className="text-red-500 mb-4 mt-1">
