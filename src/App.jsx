@@ -32,6 +32,9 @@ import PaymentSuccess from "./components/payment/paymentSuccess";
 import CheckoutForm from "./components/payment/checkout";
 import CommentsPage from "./components/comments/comment";
 import ReviewForm from "./components/review/ReviewForm";
+import CreateExam from "./components/exam/CreateExam";
+import ExamDetails from "./components/exam/GiveExam";
+import ExamResultsPage from "./components/exam/ExamResult";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -144,7 +147,7 @@ export default function App() {
           }
           path="/video/comments/:videoId"
         />
-         <Route
+        <Route
           element={
             <AuthRoute>
               <ReviewForm />
@@ -182,7 +185,30 @@ export default function App() {
           }
           path="/student-dashboard"
         />
-
+        <Route
+          element={
+            <AuthRoute>
+              <CreateExam />
+            </AuthRoute>
+          }
+          path="/create-exam/:sectionId"
+        />
+        <Route
+          element={
+            <AuthRoute>
+              <ExamResultsPage />
+            </AuthRoute>
+          }
+          path="/exam-results/:sectionId"
+        />
+        <Route
+          element={
+            <AuthRoute>
+              <ExamDetails />
+            </AuthRoute>
+          }
+          path="/give-exam/:sectionId"
+        />
         <Route
           element={
             <AuthRoute>

@@ -18,6 +18,7 @@ import {
 import AlertMessage from "../Alert/AlertMessage";
 import { useSelector } from "react-redux";
 import VideoModal from "../../utils/modal/VideoModal"; // Import the VideoModal component
+import { fetchExamsResult } from "../../reactQuery/courseSections/courseSectionsAPI";
 
 const CourseDetail = ({ course }) => {
   const { courseId } = useParams();
@@ -52,6 +53,11 @@ const CourseDetail = ({ course }) => {
   // Start course mutation handler
   const handleStartCourse = () => {
     navigate(`/checkout/${courseId}`);
+  };
+
+  // Handle exam button click with sectionId
+  const handleGiveExam = (sectionId) => {
+    navigate(`/give-exam/${sectionId}`);
   };
 
   // Get the auth user
@@ -201,6 +207,13 @@ const CourseDetail = ({ course }) => {
                   <p className="text-xl font-semibold text-gray-800">
                     {section.sectionName} ({section.videos.length})
                   </p>
+                  {/* "Give Exam" button */}
+                  <button
+                    onClick={() => handleGiveExam(section._id)}
+                    className="bg-red-600 hover:bg-red-800 text-white font-semibold py-2 px-4 rounded transition duration-200"
+                  >
+                    Give Exam
+                  </button>
                   <div className="flex space-x-2">
                     {/* <Link to={`/update-course-section/${section._id}`}>
                       <button className="flex items-center justify-center p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-200">

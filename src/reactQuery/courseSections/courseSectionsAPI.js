@@ -114,3 +114,82 @@ export const replyToCommentAPI = async (commentId, replyText) => {
     throw error; // Rethrow error to be handled by the calling function
   }
 };
+
+export const createExamAPI = async (examData) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/course-sections/create-exam/give-exam`,
+      examData,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating exam:", error);
+    throw error;
+  }
+};
+
+// Example API function
+// export const getExamDetailsAPI = async (sectionId) => {
+//   const response = await axios.get(
+//     `/course-sections/get-exam/${sectionId}`,
+//     {},
+//     {
+//       withCredentials: true,
+//     }
+//   );
+//   return response.data;
+// };
+
+export const getExamDetailsAPI = async (sectionId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/course-sections/get-exam/${sectionId}`,
+      {
+        withCredentials: true, // Include credentials if necessary
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching exam details:", error);
+    throw error; // Ensure this throws the error so it can be caught in the component
+  }
+};
+
+export const submitExamAPI = async (sectionId, answers) => {
+  try {
+    // Make a POST request to submit exam answers
+    const response = await axios.post(
+      `${BASE_URL}/course-sections/submit-exam`,
+      { sectionId, answers },
+      { withCredentials: true } //   Include credentials if necessary
+    );
+
+    // Return response data
+    return response.data;
+  } catch (error) {
+    // Handle and throw errors properly
+    const errorMessage =
+      error.response?.data?.message ||
+      "An error occurred while submitting the exam";
+    throw new Error(errorMessage);
+  }
+};
+
+export const fetchExamsResult = async (sectionId) => {
+  console.log(sectionId)
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/course-sections/reveal-exam/${sectionId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch exams");
+  }
+};
+
