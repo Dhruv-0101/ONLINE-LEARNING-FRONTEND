@@ -9,7 +9,7 @@ const StudentRankList = () => {
   //get the course Id
   const { courseId } = useParams();
   const { data, error, isLoading, isError } = useQuery({
-    queryKey: ["course-sections"],
+    queryKey: ["course-rankings"],
     queryFn: () => getAllUsersAPI(courseId),
   });
   console.log(data);
@@ -54,7 +54,7 @@ const StudentRankList = () => {
                   index < 3 ? "text-white" : "text-gray-800"
                 }`}
               >
-                {student.username}
+                {student?.username}
               </span>
               <div
                 className={`text-sm ${
@@ -70,7 +70,7 @@ const StudentRankList = () => {
                 index < 3 ? "text-white" : "text-gray-800"
               }`}
             >
-              <span className="font-bold">{student.progressPercentage}%</span>
+              <span className="font-bold">{student?.progressPercentage}%</span>
               <span className="ml-4 text-sm">
                 ({student?.sectionsCompleted}/{student?.totalSections} sections)
               </span>
