@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import {
   FaBookOpen,
   FaUser,
@@ -7,6 +7,7 @@ import {
   FaLayerGroup,
   FaStar,
   FaStarHalfAlt,
+  FaFilter,
 } from "react-icons/fa";
 import {
   checkAllCourseEnrolled,
@@ -14,6 +15,8 @@ import {
 } from "../../reactQuery/courses/coursesAPI";
 import { Link } from "react-router-dom";
 import AlertMessage from "../Alert/AlertMessage";
+import Slider from "rc-slider"; // You can use any slider component
+import "rc-slider/assets/index.css"; // Import slider styles
 
 const Courses = () => {
   const { data, error, isLoading, isError } = useQuery({
@@ -25,6 +28,13 @@ const Courses = () => {
     queryKey: ["courses-check"],
     queryFn: checkAllCourseEnrolled,
   });
+
+  // State for search query
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilter, setShowFilter] = useState(false); // State to toggle filter options
+  const [selectedPrice, setSelectedPrice] = useState([0, 100]); // Slider for price range
+  const [selectedRating, setSelectedRating] = useState(0); // For rating filter
+  const [selectedDate, setSelectedDate] = useState("latest"); // For date filter
 
   // Show loading
   if (isLoading) {
@@ -67,6 +77,23 @@ const Courses = () => {
     );
   };
 
+  // Apply filters to the courses
+  const filteredCourses = data
+    ?.filter((course) =>
+      course.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter(
+      (course) =>
+        course.price >= selectedPrice[0] && course.price <= selectedPrice[1]
+    )
+    .filter((course) => course.averageRating >= selectedRating)
+    .sort((a, b) => {
+      if (selectedDate === "latest") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
+
   return (
     <div className="container mx-auto p-8 bg-gray-200">
       <div className="text-center mb-10">
@@ -78,8 +105,95 @@ const Courses = () => {
           track of your progress.
         </p>
       </div>
+
+      {/* Search Bar with Filter Button */}
+      <div className="mb-6 flex justify-center items-center relative">
+        <input
+          type="text"
+          placeholder="Search for a course..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:border-blue-500 w-full md:w-1/2"
+        />
+        {/* Filter Button */}
+        <button
+          onClick={() => setShowFilter((prev) => !prev)}
+          className="absolute right-0 top-0 mt-2 mr-2 p-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
+        >
+          <FaFilter size={20} />
+        </button>
+
+        {/* Filter Modal */}
+        {showFilter && (
+          <div className="absolute right-0 mt-12 w-80 p-5 bg-white shadow-lg rounded-lg z-10">
+            <h4 className="text-lg font-bold mb-2">Filters</h4>
+            {/* Price Filter */}
+            <div className="mb-4">
+              <label className="block mb-2 text-gray-600">Price Range</label>
+              <Slider
+                range
+                min={0}
+                max={100}
+                defaultValue={selectedPrice}
+                onChange={(value) => setSelectedPrice(value)}
+                trackStyle={{ backgroundColor: "#4299e1" }}
+                handleStyle={[
+                  { borderColor: "#4299e1" },
+                  { borderColor: "#4299e1" },
+                ]}
+                railStyle={{ backgroundColor: "#CBD5E0" }}
+              />
+              <div className="flex justify-between mt-2">
+                <span>${selectedPrice[0]}</span>
+                <span>${selectedPrice[1]}</span>
+              </div>
+            </div>
+
+            {/* Rating Filter */}
+            <div className="mb-4">
+              <label className="block mb-2 text-gray-600">Rating</label>
+              <select
+                value={selectedRating}
+                onChange={(e) => setSelectedRating(parseFloat(e.target.value))}
+                className="px-4 py-2 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:border-blue-500"
+              >
+                <option value={0}>All ratings</option>
+                <option value={1}>1 star & above</option>
+                <option value={2}>2 stars & above</option>
+                <option value={3}>3 stars & above</option>
+                <option value={4}>4 stars & above</option>
+                <option value={5}>5 stars</option>
+              </select>
+            </div>
+
+            {/* Date Filter */}
+            <div className="mb-4">
+              <label className="block mb-2 text-gray-600">Date Created</label>
+              <select
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:border-blue-500"
+              >
+                <option value="latest">Latest</option>
+                <option value="oldest">Oldest</option>
+              </select>
+            </div>
+
+            {/* Apply Filter Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowFilter(false)}
+                className="px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
+              >
+                Apply Filter
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {data?.map((course) => (
+        {filteredCourses?.map((course) => (
           <Link
             key={course._id}
             to={`/courses/${course._id}`}
