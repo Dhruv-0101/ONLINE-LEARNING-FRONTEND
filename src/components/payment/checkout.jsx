@@ -40,7 +40,7 @@ const CheckoutForm = () => {
             elements,
             clientSecret: paymentMutation.data?.clientSecret,
             confirmParams: {
-              return_url: "https://online-learning-frontend-seven.vercel.app/success",
+              return_url: "https://online-learning-frontend-seven.vercel.app//success",
             },
           });
           setErrorMessage(error?.message);
