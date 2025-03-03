@@ -1,10 +1,11 @@
 import axios from "axios";
 //create that must return a promise
-const BASE_URL = "http://localhost:5000/api/v1/stripe";
+const BASE_URL =
+  "https://online-learning-backend-yktj.onrender.com/api/v1/stripe";
 
 //!Create post api
 export const paymentIntentAPI = async (courseId) => {
-    console.log(courseId)
+  console.log(courseId);
   const response = await axios.post(
     `${BASE_URL}/checkout`,
     {
