@@ -488,18 +488,25 @@
 //   );
 // };
 
-// export default CommentsPage;
-import React, { useState } from "react";
+// export default CommentsPage;import React, { useState } from "react";
 import { format } from "date-fns";
 import { FaRegClock } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-const CommentsPage = ({ comments, handleReplySubmit, handleReplyChange, replies }) => {
+const CommentsPage = ({
+  comments = [],
+  handleReplySubmit,
+  handleReplyChange,
+  replies = {},
+}) => {
   const [showReplyInput, setShowReplyInput] = useState({});
   const [visibleReplies, setVisibleReplies] = useState({});
 
   const toggleReplyInput = (commentId) => {
-    setShowReplyInput((prev) => ({ ...prev, [commentId]: !prev[commentId] }));
+    setShowReplyInput((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
   };
 
   const loadMoreReplies = (commentId) => {
@@ -510,10 +517,18 @@ const CommentsPage = ({ comments, handleReplySubmit, handleReplyChange, replies 
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Comments</h2>
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <motion.h2
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-3xl font-bold mb-8 text-gray-800 text-center"
+      >
+        Comments & Replies
+      </motion.h2>
+
       <div className="space-y-6">
-        {[...comments]
+        {[...(comments || [])]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .map((comment) => (
             <motion.div
@@ -521,15 +536,18 @@ const CommentsPage = ({ comments, handleReplySubmit, handleReplyChange, replies 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="bg-white p-5 rounded-xl shadow hover:shadow-md transition"
+              transition={{ duration: 0.3 }}
+              className="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300"
             >
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-semibold text-gray-800">{comment.user.username}</p>
+                    <p className="font-semibold text-gray-800 text-lg">
+                      {comment.user.username}
+                    </p>
                     <p className="text-sm text-gray-700">{comment.commentText}</p>
                   </div>
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-gray-400 flex items-center gap-1 mt-1">
                     <FaRegClock />
                     {format(new Date(comment.createdAt), "PPp")}
                   </span>
@@ -546,21 +564,24 @@ const CommentsPage = ({ comments, handleReplySubmit, handleReplyChange, replies 
                   {showReplyInput[comment._id] && (
                     <motion.form
                       onSubmit={(e) => handleReplySubmit(comment._id, e)}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="mt-3"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="mt-2"
                     >
                       <textarea
                         value={replies[comment._id] || ""}
-                        onChange={(e) => handleReplyChange(comment._id, e.target.value)}
+                        onChange={(e) =>
+                          handleReplyChange(comment._id, e.target.value)
+                        }
                         rows="2"
                         placeholder="Write your reply..."
                         className="w-full p-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
                       />
                       <button
                         type="submit"
-                        className="mt-2 px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+                        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition duration-200"
                       >
                         Post Reply
                       </button>
@@ -568,8 +589,8 @@ const CommentsPage = ({ comments, handleReplySubmit, handleReplyChange, replies 
                   )}
                 </AnimatePresence>
 
-                {comment.replies && comment.replies.length > 0 && (
-                  <div className="mt-4 ml-4 border-l-2 pl-4">
+                {Array.isArray(comment.replies) && comment.replies.length > 0 && (
+                  <div className="mt-4 ml-4 border-l-2 pl-4 border-blue-100">
                     {[...comment.replies]
                       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                       .slice(0, visibleReplies[comment._id] || 3)
@@ -579,12 +600,15 @@ const CommentsPage = ({ comments, handleReplySubmit, handleReplyChange, replies 
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
                           className="bg-gray-50 p-3 rounded-lg mb-3 shadow-sm"
                         >
                           <p className="font-medium text-sm text-gray-800">
                             {reply.user.username}
                           </p>
-                          <p className="text-sm text-gray-700">{reply.replyText}</p>
+                          <p className="text-sm text-gray-700">
+                            {reply.replyText}
+                          </p>
                           <span className="text-xs text-gray-400 flex items-center gap-1 mt-1">
                             <FaRegClock />
                             {format(new Date(reply.createdAt), "PPp")}
