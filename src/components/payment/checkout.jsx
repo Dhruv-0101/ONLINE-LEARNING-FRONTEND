@@ -23,54 +23,32 @@ const CheckoutForm = () => {
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState(null);
   //Handle submit for payment
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   if (elements === null) {
-  //     return;
-  //   }
-  //   const { error: submitErr } = await elements.submit();
-  //   if (submitErr) {
-  //     return;
-  //   }
-  //   try {
-  //     paymentMutation
-  //       .mutateAsync(courseId)
-  //       .then(async () => {
-  //         const { error } = await stripe.confirmPayment({
-  //           elements,
-  //           clientSecret: paymentMutation.data?.clientSecret,
-  //           confirmParams: {
-  //             return_url: "https://online-learning-frontend-seven.vercel.app/success",
-  //           },
-  //         });
-  //         setErrorMessage(error?.message);
-  //       })
-  //       .catch((e) => console.log(e));
-  //   } catch (error) {
-  //     setErrorMessage(error?.message);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!stripe || !elements) return;
-
-    setIsProcessing(true);
-
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/success`,
-      },
-    });
-
-    if (error) {
-      setMessage(error.message);
-    } else if (paymentIntent.status === "succeeded") {
-      setMessage("Payment succeeded!");
+    if (elements === null) {
+      return;
     }
-
-    setIsProcessing(false);
+    const { error: submitErr } = await elements.submit();
+    if (submitErr) {
+      return;
+    }
+    try {
+      paymentMutation
+        .mutateAsync(courseId)
+        .then(async () => {
+          const { error } = await stripe.confirmPayment({
+            elements,
+            clientSecret: paymentMutation.data?.clientSecret,
+            confirmParams: {
+              return_url: `${window.location.origin}/success`,
+            },
+          });
+          setErrorMessage(error?.message);
+        })
+        .catch((e) => console.log(e));
+    } catch (error) {
+      setErrorMessage(error?.message);
+    }
   };
   console.log(paymentMutation);
   return (
