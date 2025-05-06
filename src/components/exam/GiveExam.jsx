@@ -335,7 +335,7 @@ const ExamDetails = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [showReview, setShowReview] = useState(false);
-  const [finalSubmitTimeLeft, setFinalSubmitTimeLeft] = useState(180); // 3 minutes for final submit
+  const [reviewTimeLeft, setReviewTimeLeft] = useState(180); // 3 minutes for review
 
   const {
     data: exam,
@@ -389,17 +389,18 @@ const ExamDetails = () => {
 
   useEffect(() => {
     if (showReview) {
-      const timer = setInterval(() => {
-        setFinalSubmitTimeLeft((prev) => {
+      setReviewTimeLeft(180); // reset to 3 minutes
+      const reviewTimer = setInterval(() => {
+        setReviewTimeLeft((prev) => {
           if (prev === 1) {
-            clearInterval(timer);
-            handleSubmit(); // Automatically submit after 3 minutes
+            clearInterval(reviewTimer);
+            handleSubmit(); // auto-submit after 3 mins
           }
           return prev - 1;
         });
       }, 1000);
 
-      return () => clearInterval(timer);
+      return () => clearInterval(reviewTimer);
     }
   }, [showReview]);
 
@@ -449,42 +450,43 @@ const ExamDetails = () => {
       <div className="container mx-auto p-4">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h1 className="text-2xl font-bold mb-4">Review Your Answers</h1>
-          {shuffledQuestions.map((question, index) => (
+
+          <div className="text-red-600 font-bold text-lg mb-4">
+            Review Time Left: {reviewTimeLeft}s
+          </div>
+
+          {shuffledQuestions?.map((question, index) => (
             <div
-              key={question._id}
+              key={question?._id}
               className="mb-4 border p-4 rounded bg-gray-50"
             >
               <h3 className="font-semibold mb-2">
-                {index + 1}. {question.question}
+                {index + 1}. {question?.question}
               </h3>
               <ul className="ml-5">
-                {question.shuffledOptions.map((option) => (
-                  <li key={option.key}>
+                {question?.shuffledOptions?.map((option) => (
+                  <li key={option?.key}>
                     <input
                       type="radio"
-                      id={`${question._id}-${option.key}`}
-                      name={`question-${question._id}`}
-                      value={option.key}
-                      checked={selectedAnswers[question._id] === option.key}
+                      id={`${question?._id}-${option?.key}`}
+                      name={`question-${question?._id}`}
+                      value={option?.key}
+                      checked={selectedAnswers?.[question?._id] === option?.key}
                       onChange={() =>
-                        handleAnswerChange(question._id, option.key)
+                        handleAnswerChange(question?._id, option?.key)
                       }
                     />
                     <label
-                      htmlFor={`${question._id}-${option.key}`}
+                      htmlFor={`${question?._id}-${option?.key}`}
                       className="ml-1"
                     >
-                      <strong>{option.key.slice(-1)}:</strong> {option.label}
+                      <strong>{option?.key?.slice(-1)}:</strong> {option?.label}
                     </label>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-
-          <div className="mt-4 text-red-600">
-            Time Left to Submit: {finalSubmitTimeLeft}s
-          </div>
 
           <button
             onClick={handleSubmit}
@@ -510,14 +512,14 @@ const ExamDetails = () => {
     );
   }
 
-  const currentQuestion = shuffledQuestions[currentQuestionIndex];
+  const currentQuestion = shuffledQuestions?.[currentQuestionIndex];
 
   return (
     <div className="container mx-auto p-4">
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-4">{exam.name}</h1>
-        <p className="mb-2 text-gray-700">{exam.description}</p>
-        <p className="mb-6 text-gray-600">Total Score: {exam.score}</p>
+        <h1 className="text-3xl font-bold mb-4">{exam?.name}</h1>
+        <p className="mb-2 text-gray-700">{exam?.description}</p>
+        <p className="mb-6 text-gray-600">Total Score: {exam?.score}</p>
 
         <div className="text-xl font-bold text-red-600 mb-4">
           Time Left: {timeLeft}s
@@ -527,25 +529,27 @@ const ExamDetails = () => {
           <h3 className="text-lg font-semibold mb-2">
             Question {currentQuestionIndex + 1}
           </h3>
-          <p className="text-gray-800 mb-2">{currentQuestion.question}</p>
+          <p className="text-gray-800 mb-2">{currentQuestion?.question}</p>
           <ul className="ml-5">
-            {currentQuestion.shuffledOptions.map((option) => (
-              <li key={option.key}>
+            {currentQuestion?.shuffledOptions?.map((option) => (
+              <li key={option?.key}>
                 <input
                   type="radio"
-                  id={`${currentQuestion._id}-${option.key}`}
-                  name={`question-${currentQuestion._id}`}
-                  value={option.key}
-                  checked={selectedAnswers[currentQuestion._id] === option.key}
+                  id={`${currentQuestion?._id}-${option?.key}`}
+                  name={`question-${currentQuestion?._id}`}
+                  value={option?.key}
+                  checked={
+                    selectedAnswers?.[currentQuestion?._id] === option?.key
+                  }
                   onChange={() =>
-                    handleAnswerChange(currentQuestion._id, option.key)
+                    handleAnswerChange(currentQuestion?._id, option?.key)
                   }
                 />
                 <label
-                  htmlFor={`${currentQuestion._id}-${option.key}`}
+                  htmlFor={`${currentQuestion?._id}-${option?.key}`}
                   className="ml-1"
                 >
-                  <strong>{option.key.slice(-1)}:</strong> {option.label}
+                  <strong>{option?.key?.slice(-1)}:</strong> {option?.label}
                 </label>
               </li>
             ))}
@@ -556,7 +560,7 @@ const ExamDetails = () => {
           onClick={goToNextQuestion}
           className="bg-yellow-500 text-white py-2 px-4 rounded"
         >
-          {currentQuestionIndex === shuffledQuestions.length - 1
+          {currentQuestionIndex === shuffledQuestions?.length - 1
             ? "Review Answers"
             : "Next"}
         </button>
