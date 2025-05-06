@@ -257,6 +257,7 @@
 // };
 
 // export default CommentsPage;
+
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -264,10 +265,9 @@ import {
   getCommentsAPI,
   postCommentAPI,
   replyToCommentAPI,
-  likeReplyAPI,
 } from "../../reactQuery/courseSections/courseSectionsAPI";
 import { format } from "date-fns";
-import { FaRegClock, FaThumbsUp } from "react-icons/fa";
+import { FaRegClock } from "react-icons/fa";
 
 const CommentsPage = () => {
   const { videoId } = useParams();
@@ -298,7 +298,9 @@ const CommentsPage = () => {
       setErrorMessage("");
     },
     onError: (error) => {
-      setErrorMessage(error.response?.data?.message || "Error posting comment.");
+      setErrorMessage(
+        error.response?.data?.message || "Error posting comment."
+      );
     },
   });
 
@@ -313,17 +315,6 @@ const CommentsPage = () => {
     },
     onError: (error) => {
       setErrorMessage(error.response?.data?.message || "Error posting reply.");
-    },
-  });
-
-  const { mutate: likeReply } = useMutation({
-    mutationFn: (replyId) => likeReplyAPI(replyId),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["comments", videoId]);
-      setErrorMessage("");
-    },
-    onError: (error) => {
-      setErrorMessage(error.response?.data?.message || "Error liking reply.");
     },
   });
 
@@ -358,11 +349,11 @@ const CommentsPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-bold mb-6 text-blue-600">Comments</h2>
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Comments</h2>
 
       {errorMessage && (
-        <div className="bg-red-100 text-red-700 p-3 mb-4 rounded-md shadow-md">
+        <div className="bg-red-100 text-red-700 p-4 mb-6 rounded-md">
           {errorMessage}
         </div>
       )}
@@ -371,38 +362,41 @@ const CommentsPage = () => {
       <div className="mb-6">
         <button
           onClick={() => setShowNewComment((prev) => !prev)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md shadow-md transition duration-300"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-md"
         >
           {showNewComment ? "Cancel" : "Add a Comment"}
         </button>
         {showNewComment && (
-          <form onSubmit={handlePostComment} className="mt-6 space-y-3">
+          <form onSubmit={handlePostComment} className="mt-4 space-y-4">
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               rows="4"
-              className="w-full border border-gray-300 p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200"
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Write a comment..."
             />
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-300"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-md"
             >
-              Post Comment
+              Post
             </button>
           </form>
         )}
       </div>
 
       {/* Comment List */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {isLoading ? (
-          <p className="text-lg text-gray-600">Loading comments...</p>
+          <p className="text-center text-gray-500">Loading comments...</p>
         ) : isQueryError ? (
-          <p className="text-lg text-red-600">Failed to load comments.</p>
+          <p className="text-center text-red-500">Failed to load comments.</p>
         ) : (
           comments?.map((comment) => (
-            <div key={comment._id} className="flex gap-4">
+            <div
+              key={comment._id}
+              className="flex gap-4 border-b border-gray-300 pb-4"
+            >
               <div className="flex-shrink-0">
                 <img
                   src={`https://ui-avatars.com/api/?name=${comment.user.username}`}
@@ -412,60 +406,52 @@ const CommentsPage = () => {
               </div>
               <div className="flex-1">
                 <div className="bg-gray-100 rounded-lg p-4 shadow-sm">
-                  <div className="text-lg font-semibold text-blue-700">
+                  <div className="text-lg font-semibold text-gray-800">
                     {comment.user.username}
                   </div>
-                  <p className="text-gray-800 mt-2">{comment.commentText}</p>
-                  <div className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                  <p className="text-gray-700 mt-2">{comment.commentText}</p>
+                  <div className="text-xs text-gray-500 mt-2 flex items-center gap-2">
                     <FaRegClock />
                     {format(new Date(comment.createdAt), "PPPpp")}
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center gap-3">
+                {/* Reply Section */}
+                <div className="mt-4">
                   <button
                     onClick={() => toggleReplyInput(comment._id)}
                     className="text-sm text-blue-600 hover:underline"
                   >
-                    {showReplyInput[comment._id] ? "Cancel" : "Reply"}
+                    {showReplyInput[comment._id] ? "Cancel Reply" : "Reply"}
                   </button>
 
-                  {/* Like button */}
-                  <button
-                    onClick={() => likeReply(comment._id)}
-                    className="text-sm text-gray-500 hover:text-blue-600"
-                  >
-                    <FaThumbsUp className="inline-block mr-1" />
-                    Like
-                  </button>
-                </div>
-
-                {showReplyInput[comment._id] && (
-                  <form
-                    onSubmit={(e) => handleReplySubmit(comment._id, e)}
-                    className="mt-4"
-                  >
-                    <textarea
-                      value={replies[comment._id] || ""}
-                      onChange={(e) =>
-                        handleReplyChange(comment._id, e.target.value)
-                      }
-                      rows="3"
-                      className="w-full border border-gray-300 p-3 rounded-md"
-                      placeholder="Write a reply..."
-                    />
-                    <button
-                      type="submit"
-                      className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                  {showReplyInput[comment._id] && (
+                    <form
+                      onSubmit={(e) => handleReplySubmit(comment._id, e)}
+                      className="mt-4"
                     >
-                      Reply
-                    </button>
-                  </form>
-                )}
+                      <textarea
+                        value={replies[comment._id] || ""}
+                        onChange={(e) =>
+                          handleReplyChange(comment._id, e.target.value)
+                        }
+                        rows="3"
+                        className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Write a reply..."
+                      />
+                      <button
+                        type="submit"
+                        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+                      >
+                        Post Reply
+                      </button>
+                    </form>
+                  )}
+                </div>
 
                 {/* Replies */}
                 {comment.replies && comment.replies.length > 0 && (
-                  <div className="mt-6 pl-6 border-l-4 border-gray-300 space-y-4">
+                  <div className="mt-6 pl-6 space-y-4 border-l-4 border-blue-200">
                     {comment.replies
                       .slice(0, visibleReplies[comment._id] || 3)
                       .map((reply) => (
@@ -475,26 +461,19 @@ const CommentsPage = () => {
                             alt="avatar"
                             className="w-10 h-10 rounded-full"
                           />
-                          <div className="flex-1 bg-gray-50 rounded-md p-4 shadow-sm">
-                            <div className="text-sm font-semibold text-blue-700">
+                          <div className="flex-1 bg-gray-50 rounded-md p-3">
+                            <div className="text-sm font-semibold text-gray-800">
                               {reply.user.username}
                             </div>
-                            <p className="text-gray-800">{reply.replyText}</p>
-                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            <p className="text-gray-700">{reply.replyText}</p>
+                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                               <FaRegClock />
                               {format(new Date(reply.createdAt), "PPPpp")}
                             </div>
-                            {/* Like button for replies */}
-                            <button
-                              onClick={() => likeReply(reply._id)}
-                              className="text-sm text-gray-500 hover:text-blue-600 mt-2"
-                            >
-                              <FaThumbsUp className="inline-block mr-1" />
-                              Like
-                            </button>
                           </div>
                         </div>
                       ))}
+
                     {comment.replies.length >
                       (visibleReplies[comment._id] || 3) && (
                       <button
