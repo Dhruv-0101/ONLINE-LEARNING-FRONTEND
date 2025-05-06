@@ -39,7 +39,7 @@ const PaymentSuccess = () => {
               {paymentIntentId}.
             </p>
             <Link
-              to="/dashboard/create-post"
+              to="/courses"
               className="w-full flex items-center justify-center py-2 px-4 bg-orange-500 text-white rounded hover:bg-orange-600 focus:outline-none"
             >
               Start Learning
