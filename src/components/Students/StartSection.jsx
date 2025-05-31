@@ -139,7 +139,7 @@ const StartSection = () => {
       },
       {
         onSuccess: () => {
-          alert("Note added successfully!");
+          alert("Note added successfully!!");
           resetNoteState();
           refetchNotes(); // refresh notes list
         },
