@@ -200,3 +200,30 @@ export const toggleFollowAPI = async (userId) => {
   );
   return response?.data;
 };
+//=====Create Notifications for All Students in a Course=====
+export const createCourseNotificationAPI = async ({ courseId, message }) => {
+  const response = await axios.post(
+    `${BASE_URL}/users/addNotification`,
+    { courseId, message },
+    {
+      withCredentials: true,
+    }
+  );
+  return response?.data;
+};
+export const getUserNotificationsAPI = async () => {
+  const response = await axios.get(`${BASE_URL}/users/getnotifications`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+// reactQuery/notifications/notificationsAPI.js
+
+export const markNotificationAsReadAPI = async (notificationId) => {
+  const response = await axios.put(
+    `${BASE_URL}/users/mark-as-read`,
+    { notificationId },
+    { withCredentials: true }
+  );
+  return response.data;
+};
