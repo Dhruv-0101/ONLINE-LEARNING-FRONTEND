@@ -27,17 +27,31 @@ export default function PrivateNavbar() {
   //logout mutation
 
   //logout handler
-  const logoutHandler = () => {
-    const userRole = userProfile?.role;
+  // const logoutHandler = () => {
+  //   const userRole = userProfile?.role;
 
-    dispatch(logout());
-    // Redirect based on user role
-    if (userRole === "student") {
-      navigate("/home");
-    } else if (userRole === "instructor") {
-      navigate("/");
-    } else {
-      navigate("/");
+  //   dispatch(logout());
+  //   // Redirect based on user role
+  //   if (userRole === "student") {
+  //     navigate("/home");
+  //   } else if (userRole === "instructor") {
+  //     navigate("/");
+  //   } else {
+  //     navigate("/");
+  //   }
+  // };
+  const logoutHandler = async () => {
+    try {
+      await dispatch(logout()).unwrap(); // call API and wait
+  
+      // Redirect based on role
+      if (userProfile?.role === "student") {
+        navigate("/home");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
     }
   };
   const data = {};
