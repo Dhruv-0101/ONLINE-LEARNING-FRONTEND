@@ -84,7 +84,7 @@ export const checkUserAuthStatusAPI = async () => {
 
 export const logoutAPI = async () => {
   const response = await axios.post(
-    "http://localhost:9000/api/v1/users/logout",
+    `${BASE_URL}/users/logout`,
     {},
     {
       withCredentials: true,
