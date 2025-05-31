@@ -87,3 +87,34 @@ export const submitReview = async (courseId, reviewData) => {
   );
   return response.data;
 };
+// Add note to a video inside a course section
+export const addVideoNoteAPI = async (sectionId, videoId, noteData) => {
+  console.log(
+    "section Id: ",
+    sectionId,
+    "video Id: ",
+    videoId,
+    "noteData: ",
+    noteData
+  );
+  // noteData = { timestamp: Number, text: String }
+  const response = await axios.post(
+    `${BASE_URL}/courses/sections/${sectionId}/videos/${videoId}/notes`,
+    noteData,
+    {
+      withCredentials: true,
+    }
+  );
+  return response?.data;
+};
+// Fetch notes for a video in a course section for current user
+export const getVideoNotesAPI = async (sectionId, videoId) => {
+  console.log("section Id: ", sectionId, "video Id: ", videoId);
+  const response = await axios.get(
+    `${BASE_URL}/courses/section/${sectionId}/video/${videoId}`,
+    {
+      withCredentials: true,
+    }
+  );
+  return response?.data;
+};
