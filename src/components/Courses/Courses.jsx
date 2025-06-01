@@ -255,7 +255,12 @@ const Courses = () => {
               <div className="bg-gray-100 border-t border-gray-300 p-4 flex">
                 {/* Reviews Details */}
                 <div className="flex-grow">
-                  <h4 className="text-lg font-semibold mb-2">Reviews</h4>
+                  <Link
+                    to={`/courses/get-review/${course._id}`}
+                    className="text-lg font-semibold mb-2 text-blue-600 hover:underline"
+                  >
+                    Reviews
+                  </Link>
                   <div className="flex items-center mb-2">
                     {renderStars(course?.averageRating || 0)}
                     <span className="ml-2 text-gray-600">

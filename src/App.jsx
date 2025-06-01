@@ -35,6 +35,7 @@ import ReviewForm from "./components/review/ReviewForm";
 import CreateExam from "./components/exam/CreateExam";
 import ExamDetails from "./components/exam/GiveExam";
 import ExamResultsPage from "./components/exam/ExamResult";
+import CourseReviewPage from "./components/Courses/CourseReviewPage";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -171,6 +172,15 @@ export default function App() {
           }
           path="/start-section/:courseId"
         />
+        <Route
+          path="/courses/get-review/:courseId"
+          element={
+            <AuthRoute>
+              <CourseReviewPage />{" "}
+            </AuthRoute>
+          }
+        />
+
         <Route element={<Register />} path="/register" />
         <Route element={<InstructorRegister />} path="/InstructorRegister" />
 

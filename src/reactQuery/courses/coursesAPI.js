@@ -118,3 +118,10 @@ export const getVideoNotesAPI = async (sectionId, videoId) => {
   );
   return response?.data;
 };
+// Fetch all reviews for a specific course
+export const getCourseReviewsAPI = async (courseId) => {
+  const response = await axios.get(`${BASE_URL}/courses/course/${courseId}`, {
+    withCredentials: true,
+  });
+  return response?.data;
+};
