@@ -36,6 +36,7 @@ import CreateExam from "./components/exam/CreateExam";
 import ExamDetails from "./components/exam/GiveExam";
 import ExamResultsPage from "./components/exam/ExamResult";
 import CourseReviewPage from "./components/Courses/CourseReviewPage";
+import LoginWithPasskey from "./components/User/LoginWithPassKey";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -67,6 +68,7 @@ export default function App() {
       <NavbarComponent />
       <Routes>
         <Route element={<RoleSelectionPage />} path="/" />
+        <Route element={<LoginWithPasskey />} path="/login-with-passkey" />
 
         {/* instructor links */}
         <Route

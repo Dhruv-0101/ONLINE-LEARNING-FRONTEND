@@ -131,6 +131,26 @@ const Login = () => {
           >
             Log in
           </button>
+          {/* New two-step authentication button */}
+          <button
+            className="h-14 inline-flex items-center justify-center gap-2 py-4 px-6 rounded-full bg-blue-500 w-full text-white font-bold font-heading shadow hover:bg-blue-600 focus:ring focus:ring-blue-200 transition duration-200"
+            type="button"
+            onClick={() => navigate("/login-with-passkey")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width={21}
+              height={21}
+              viewBox="0 0 21 21"
+              fill="none"
+            >
+              <path
+                d="M10.5 1.5C5.80558 1.5 2 5.30558 2 10C2 14.6944 5.80558 18.5 10.5 18.5C15.1944 18.5 19 14.6944 19 10C19 5.30558 15.1944 1.5 10.5 1.5ZM11.35 15.15L10.5 16L9.65 15.15L6.35 11.85L7.2 11L10.5 14.3L13.8 11L14.65 11.85L11.35 15.15ZM10.5 9.3C9.67157 9.3 9 8.62843 9 7.8C9 6.97157 9.67157 6.3 10.5 6.3C11.3284 6.3 12 6.97157 12 7.8C12 8.62843 11.3284 9.3 10.5 9.3Z"
+                fill="white"
+              />
+            </svg>
+            Login With Two-step Authentication
+          </button>
         </form>
       </div>
     </div>

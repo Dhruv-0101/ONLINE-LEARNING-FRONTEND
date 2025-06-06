@@ -1,5 +1,7 @@
 import axios from "axios";
 import { BASE_URL } from "../../utils/utils";
+import { startRegistration } from "@simplewebauthn/browser"; // Adjust the import as necessary
+import { startAuthentication } from "@simplewebauthn/browser"; // Adjust the import as necessary
 
 //=======Get user profile=====
 export const getUserProfileAPI = async (courseId) => {
@@ -226,4 +228,59 @@ export const markNotificationAsReadAPI = async (notificationId) => {
     { withCredentials: true }
   );
   return response.data;
+};
+export const registerPassKey = async () => {
+  const response = await axios.post(
+    `${BASE_URL}/users/register-passkey`,
+    {},
+    {
+      withCredentials: true,
+    }
+  );
+
+  console.log(response);
+
+  // Directly access response.data
+  const challengeResult = response.data;
+  const { options } = challengeResult; // Server side challenge
+
+  const authenticationResult = await startRegistration({
+    ...options,
+  });
+
+  console.log(authenticationResult);
+
+  const registerVerifyResponse = await axios.post(
+    `${BASE_URL}/users/register-passkey-verify`,
+    { cred: authenticationResult },
+    { withCredentials: true }
+  );
+  console.log(registerVerifyResponse.data);
+};
+
+export const loginpasskey = async (username) => {
+  const response = await axios.post(
+    `${BASE_URL}/users/login-passkey`,
+    { username },
+    {
+      withCredentials: true,
+    }
+  );
+
+  // Directly access response.data
+  const challengeResult = response.data;
+  const { options } = challengeResult; // Server side challenge
+
+  const authenticationResult = await startAuthentication({
+    ...options,
+  });
+
+  console.log(authenticationResult);
+
+  const loginVerifyResponse = await axios.post(
+    `${BASE_URL}/users/login-passkey-verify`,
+    { username, cred: authenticationResult },
+    { withCredentials: true }
+  );
+  console.log(loginVerifyResponse.data);
 };

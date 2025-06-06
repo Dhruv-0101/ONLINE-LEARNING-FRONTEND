@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
+import { registerPassKey } from "../../reactQuery/user/usersAPI";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -43,7 +44,7 @@ export default function PrivateNavbar() {
   const logoutHandler = async () => {
     try {
       await dispatch(logout()).unwrap(); // call API and wait
-  
+
       // Redirect based on role
       if (userProfile?.role === "student") {
         navigate("/home");
@@ -55,6 +56,24 @@ export default function PrivateNavbar() {
     }
   };
   const data = {};
+  const registerPasskeyMutation = useMutation({
+    mutationKey: ["register-passkey"],
+    mutationFn: registerPassKey,
+    onSuccess: () => {
+      console.log("Passkey registered successfully");
+      // setShowSuccessModal(true);
+
+      // Optionally, refetch the profile data if necessary
+      // refetchProfile();
+    },
+    onError: (error) => {
+      console.error("Error registering passkey:", error);
+    },
+  });
+  // register passkey handler
+  const registerPasskeyHandler = async () => {
+    registerPasskeyMutation.mutateAsync();
+  };
 
   return (
     <Disclosure as="nav" className="bg-white ">
@@ -91,6 +110,14 @@ export default function PrivateNavbar() {
                       >
                         Student Dashboard
                       </Link>
+                      {/* Register Passkey Button */}
+                      <button
+                        onClick={registerPasskeyHandler}
+                        type="button"
+                        className="ml-2 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Turn On Two Factor Authentication
+                      </button>
                     </>
                   )}
 
