@@ -4,7 +4,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IoLogOutOutline } from "react-icons/io5";
 import { FaCubes } from "react-icons/fa";
-import { FiShield, FiTerminal, FiLayout } from "react-icons/fi";
+import { FiShield, FiTerminal, FiLayout, FiActivity } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
