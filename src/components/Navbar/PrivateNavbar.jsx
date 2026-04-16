@@ -7,6 +7,7 @@ import { FaCubes } from "react-icons/fa";
 import { FiShield, FiTerminal, FiLayout } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../../redux/slices/authSlice";
 import { registerPassKey } from "../../reactQuery/user/usersAPI";
 
