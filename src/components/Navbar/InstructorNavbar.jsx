@@ -1,11 +1,9 @@
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link, useNavigate } from "react-router-dom";
-import { MdOutlineDashboard } from "react-icons/md";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IoLogOutOutline } from "react-icons/io5";
-import { useMutation, useQuery } from "@tanstack/react-query";
-
+import { FaCubes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 
@@ -14,193 +12,111 @@ function classNames(...classes) {
 }
 
 export default function InstructorNavbar() {
-  //get the user from store
-  const { userProfile } = useSelector((state) => state.auth);
-  //isAdmin
-  const isInstructor = userProfile?.role === "instructor";
-
-  //navigate
+  const { isAuthenticated, userProfile } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  //dispatch
+  const location = useLocation();
   const dispatch = useDispatch();
 
-  //logout mutation
+  if (!isAuthenticated || userProfile?.role !== "instructor") {
+    return null;
+  }
 
-  //logout handler
-  const logoutHandler = () => {
-    dispatch(logout());
-    navigate("/");
+  const logoutHandler = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+      navigate("/");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
-  const data = {};
+
+  const navLinks = [
+    { name: "Add Course", href: "/instructor-add-course" },
+    { name: "My Courses", href: "/instructor-courses" },
+    { name: "Course Sections", href: "/instructor-course-sections" },
+  ];
+
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <Disclosure as="nav" className="bg-white ">
+    <Disclosure as="nav" className="fixed top-0 left-0 right-0 z-[100] bg-[#0B0F1A]/80 backdrop-blur-xl border-b border-white/5">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 justify-start items-center">
-              <div className="flex justify-center flex-row w-full">
-                <div className="-ml-2 mr-2 flex items-left md:hidden">
-                  {/* Mobile menu button */}
-                  <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                    <span className="absolute -inset-0.5" />
-                    <span className="sr-only">Open main menu</span>
-                    {open ? (
-                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Disclosure.Button>
-                </div>
+            <div className="flex h-20 justify-between items-center">
+              <div className="flex items-center gap-8">
+                <Link to="/" className="flex flex-shrink-0 items-center gap-2 group transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-all">
+                    <FaCubes className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">
+                    Skill Buddy <span className="text-[10px] text-purple-400 uppercase tracking-widest ml-1 font-black">Instructor</span>
+                  </span>
+                </Link>
 
-                <div className="hidden md:ml-6 md:flex md:space-x-8">
-                  <Link
-                    to="/instructor-add-course"
-                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  >
-                    Add Course
-                  </Link>
-                  <Link
-                    to="/instructor-courses"
-                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  >
-                    Instructor Courses
-                  </Link>
-                  <Link
-                    to="/instructor-course-sections"
-                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  >
-                    Instructor Course Sections
-                  </Link>
+                <div className="hidden md:flex md:space-x-1">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      className={classNames(
+                        isActive(link.href) 
+                          ? "text-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]" 
+                          : "text-gray-400 hover:text-white hover:bg-white/5",
+                        "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
                 </div>
               </div>
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <button
-                    onClick={logoutHandler}
-                    type="button"
-                    className="relative m-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
-                  >
-                    <IoLogOutOutline className="h-5 w-5" aria-hidden="true" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-                <div className="hidden md:ml-1 md:flex md:flex-shrink-0 md:items-center">
-                  {/* Profile dropdown */}
-                  <Menu as="div" className="relative ml-1">
-                    <div>
-                      <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                      </Menu.Button>
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-200"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link
-                              to="/student-dashboard"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              My Dashboard
-                            </Link>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              onClick={logoutHandler}
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Sign out
-                            </button>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
+
+              <div className="flex items-center gap-2 sm:gap-4">
+                <button
+                  onClick={logoutHandler}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold hover:bg-red-500/20 transition-all duration-300 active:scale-95"
+                >
+                  <IoLogOutOutline className="text-lg" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+
+                <div className="-mr-2 flex items-center md:hidden">
+                  <Disclosure.Button className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                    {open ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+                  </Disclosure.Button>
                 </div>
               </div>
             </div>
           </div>
-          {/* Mobile Navs  private links*/}
-          <Disclosure.Panel className="md:hidden">
-            <div className="space-y-1 pb-3 pt-2">
-              <Link to="/">
+
+          <Disclosure.Panel className="md:hidden bg-[#0B0F1A] border-b border-white/5 pb-4">
+            <div className="space-y-1 px-4 pt-2">
+              {navLinks.map((link) => (
                 <Disclosure.Button
-                  as="button"
-                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
+                  key={link.name}
+                  as={Link}
+                  to={link.href}
+                  className={classNames(
+                    isActive(link.href)
+                      ? "text-white bg-white/10"
+                      : "text-gray-400 hover:text-white hover:bg-white/5",
+                    "block rounded-lg px-3 py-3 text-base font-medium"
+                  )}
                 >
-                  Home
+                  {link.name}
                 </Disclosure.Button>
-              </Link>
-              <Link to="/courses">
-                <Disclosure.Button
-                  as="button"
-                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
-                >
-                  Courses
-                </Disclosure.Button>
-              </Link>
-              <Link to="/student-dashboard">
-                <Disclosure.Button
-                  as="button"
-                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 sm:pl-5 sm:pr-6"
-                >
-                  My Dashboard
-                </Disclosure.Button>
-              </Link>
-            </div>
-            {/* Profile links */}
-            <div className="border-t border-gray-200 pb-3 pt-4">
-              <div className="flex items-center px-4 sm:px-6">
-                <div className="flex-shrink-0">
-                  <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-orange-100">
-                    <BellIcon
-                      className="h-5 w-5 text-orange-500"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">
-                    {localStorage.getItem("username")}
+              ))}
+              <div className="pt-4 mt-4 border-t border-white/5">
+                <div className="flex items-center gap-3 px-3 py-2">
+                  <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold border border-purple-500/30">
+                    {userProfile?.username?.charAt(0).toUpperCase()}
                   </div>
-                  <div className="text-sm font-medium text-gray-500">
-                    {data?.user?.username}
+                  <div>
+                    <p className="text-white text-sm font-bold">{userProfile?.username}</p>
+                    <p className="text-gray-500 text-xs">{userProfile?.email}</p>
                   </div>
                 </div>
-              </div>
-              <div className="mt-3 space-y-1">
-                <Link to="/dashboard/settings">
-                  <Disclosure.Button
-                    as="button"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
-                  >
-                    Settings
-                  </Disclosure.Button>
-                </Link>
-                <Disclosure.Button
-                  as="button"
-                  onClick={logoutHandler}
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 sm:px-6"
-                >
-                  Sign out
-                </Disclosure.Button>
               </div>
             </div>
           </Disclosure.Panel>

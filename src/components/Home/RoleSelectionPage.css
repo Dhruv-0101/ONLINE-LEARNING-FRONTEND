@@ -1,59 +1,368 @@
 /* src/components/Home/RoleSelectionPage.css */
-.role-selection-container {
-    display: flex;
+:root {
+  --bg-deep: #0b0f1a;
+  --primary-gradient: linear-gradient(135deg, #8a2be2 0%, #4169e1 100%);
+  --accent-cyan: #00ffff;
+  --accent-pink: #ff69b4;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --neon-glow: 0 0 20px rgba(138, 43, 226, 0.3);
+  --font-inter: "Inter", sans-serif;
+}
+
+.role-selection-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(138, 43, 226, 0.15) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(65, 105, 225, 0.15) 0%,
+      transparent 40%
+    ),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    40px 40px,
+    40px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-inter);
+  color: #ffffff;
+  overflow: hidden;
+  position: relative;
+}
+
+.role-selection-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+/* Moving Background Glows */
+.bg-glow-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(
+    circle,
+    rgba(138, 43, 226, 0.2) 0%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  z-index: 0;
+  animation: float 20s infinite alternate;
+}
+
+.bg-glow-2 {
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(
+    circle,
+    rgba(65, 105, 225, 0.2) 0%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  z-index: 0;
+  animation: float 25s infinite alternate-reverse;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(100px, 50px);
+  }
+}
+
+.role-selection-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1000px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.role-header h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #fff, #a5a5a5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.role-header p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4rem;
+  font-weight: 400;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Platform Intro Section */
+.platform-intro {
+  margin-bottom: 5rem;
+  padding: 0 20px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-top: 3rem;
+}
+
+.feature-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(138, 43, 226, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.feature-item h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.feature-item p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.role-selection-title {
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+}
+
+.role-selection-title h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.7));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.role-selection-title p {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.role-cards-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.role-card-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.role-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 40px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.role-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    800px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.06),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.role-card:hover::before {
+  opacity: 1;
+}
+
+.role-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.role-card.active {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+}
+
+.role-icon-box {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 2.5rem;
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.role-card:hover .role-icon-box {
+  background: var(--primary-gradient);
+  border-color: transparent;
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+}
+
+.role-card h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.role-card p {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 30px;
+}
+
+.role-card-footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--glass-border);
+}
+
+.role-card:hover .action-btn {
+  background: #fff;
+  color: var(--bg-deep);
+}
+
+.btn-arrow {
+  transition: transform 0.3s ease;
+}
+
+.role-card:hover .btn-arrow {
+  transform: translateX(5px);
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .role-header h1 {
+    font-size: 2.5rem;
+  }
+  .role-cards-container {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #f093fb, #f5576c);
-    color: #fff;
-    text-align: center;
-    animation: fadeIn 1.5s ease-in-out;
   }
-  
-  .role-selection-container h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+  .role-card-wrapper {
+    width: 100%;
   }
-  
-  .role-selection-container p {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  
-  .role-buttons {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .role-button {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.3s ease, background-color 0.3s ease;
-  }
-  
-  .student-button {
-    background-color: #56ccf2;
-  }
-  
-  .instructor-button {
-    background-color: #eb5757;
-  }
-  
-  .role-button:hover {
-    transform: scale(1.1);
-  }
-  
-  /* Keyframes for animations */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
+}

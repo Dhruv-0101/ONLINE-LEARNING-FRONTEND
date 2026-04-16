@@ -10,23 +10,22 @@ import { checkUserAuthStatus } from "../../redux/slices/authSlice";
 const AuthRoute = ({ children }) => {
   const dispatch = useDispatch();
 
-  const { isAuthenticated, loading } = useSelector((state) => state.auth);
-  useEffect(() => {
-    dispatch(checkUserAuthStatus());
-  }, [isAuthenticated]);
+  const { isAuthenticated, loading: reduxLoading } = useSelector((state) => state.auth);
+  
   //use location
   const location = useLocation();
   //dispatch
 
   //react query
-  const { data, isLoading } = useQuery({
+  const { data, isLoading: queryLoading } = useQuery({
     queryKey: ["userAuth"],
     queryFn: checkUserAuthStatusAPI,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
+    enabled: !isAuthenticated, // Only run if not already authenticated
   });
 
-  if (isLoading) {
+  if (reduxLoading || (queryLoading && !isAuthenticated)) {
     return <AuthCheckingComponent />;
   }
 

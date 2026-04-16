@@ -9,7 +9,7 @@ export const getUserProfileAPI = async (courseId) => {
     `${BASE_URL}/users/profile?courseId=${courseId}`,
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -32,7 +32,7 @@ export const registerAPI = async (userData) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -47,7 +47,7 @@ export const registerInstructorAPI = async (userData) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -62,7 +62,7 @@ export const loginAPI = async (userData) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -90,7 +90,7 @@ export const logoutAPI = async () => {
     {},
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -104,7 +104,7 @@ export const subscribeToFreePlanAPI = async (subscriptionPlanId) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -117,7 +117,7 @@ export const sendAccountVerificationEmailAPI = async () => {
     {},
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -128,7 +128,7 @@ export const verifyEmailAccountAPI = async (verifyToken) => {
     `${BASE_URL}/users/account-verification/${verifyToken}`,
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -142,7 +142,7 @@ export const updateEmailAPI = async (email) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -157,7 +157,7 @@ export const forgotPasswordAPI = async (email) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -173,7 +173,7 @@ export const resetPasswordAPI = async (data) => {
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -185,7 +185,7 @@ export const uploadProfilePhotoAPI = async (formData) => {
     formData,
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -198,7 +198,7 @@ export const toggleFollowAPI = async (userId) => {
     {},
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -209,7 +209,7 @@ export const createCourseNotificationAPI = async ({ courseId, message }) => {
     { courseId, message },
     {
       withCredentials: true,
-    }
+    },
   );
   return response?.data;
 };
@@ -225,7 +225,16 @@ export const markNotificationAsReadAPI = async (notificationId) => {
   const response = await axios.put(
     `${BASE_URL}/users/mark-as-read`,
     { notificationId },
-    { withCredentials: true }
+    { withCredentials: true },
+  );
+  return response.data;
+};
+
+export const markAllNotificationsAsReadAPI = async () => {
+  const response = await axios.put(
+    `${BASE_URL}/users/mark-all-as-read`,
+    {},
+    { withCredentials: true },
   );
   return response.data;
 };
@@ -235,7 +244,7 @@ export const registerPassKey = async () => {
     {},
     {
       withCredentials: true,
-    }
+    },
   );
 
   console.log(response);
@@ -253,7 +262,7 @@ export const registerPassKey = async () => {
   const registerVerifyResponse = await axios.post(
     `${BASE_URL}/users/register-passkey-verify`,
     { cred: authenticationResult },
-    { withCredentials: true }
+    { withCredentials: true },
   );
   console.log(registerVerifyResponse.data);
 };
@@ -264,7 +273,7 @@ export const loginpasskey = async (username) => {
     { username },
     {
       withCredentials: true,
-    }
+    },
   );
 
   // Directly access response.data
@@ -280,7 +289,7 @@ export const loginpasskey = async (username) => {
   const loginVerifyResponse = await axios.post(
     `${BASE_URL}/users/login-passkey-verify`,
     { username, cred: authenticationResult },
-    { withCredentials: true }
+    { withCredentials: true },
   );
   console.log(loginVerifyResponse.data);
 };

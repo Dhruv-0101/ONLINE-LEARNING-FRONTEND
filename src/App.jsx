@@ -24,7 +24,7 @@ import UpdateCourseSection from "./components/Admin/CourseSections/UpdateCourseS
 import CourseSections from "./components/Admin/Courses/CourseSections";
 import InstructorNavbar from "./components/Navbar/InstructorNavbar";
 import InstructorRoutes from "./components/AuthRoute/InstructorRoutes";
-import CourseChallengeAnnouncement from "./components/Rewards/CourseChallengeAnnouncement";
+
 import InstructorRegister from "./components/Admin/adminregister/InstructorRegister";
 import RoleSelectionPage from "./components/Home/RoleSelectionPage";
 import LoginInstructor from "./components/User/LoginInstructor";
@@ -46,22 +46,20 @@ export default function App() {
   const isStudent = userProfile?.role === "student";
   useEffect(() => {
     dispatch(checkUserAuthStatus());
-  }, [isAuthenticated, isInstructor, isStudent]);
-  // Determine which navbar to render
-  let NavbarComponent;
-  if (isAuthenticated) {
-    switch (userProfile?.role) {
-      case "instructor":
-        NavbarComponent = InstructorNavbar;
-        break;
-      case "student":
-        NavbarComponent = PrivateNavbar;
-        break;
-      default:
-        NavbarComponent = PublicNavbar;
+    if (userProfile) {
+      console.log("Current Session Role:", userProfile.role);
     }
-  } else {
-    NavbarComponent = PublicNavbar;
+  }, [isAuthenticated, userProfile?.role]);
+  // Determine which navbar to render
+  let NavbarComponent = PublicNavbar;
+  
+  if (isAuthenticated && userProfile) {
+    const role = userProfile.role?.toLowerCase().trim();
+    if (role === "instructor") {
+      NavbarComponent = InstructorNavbar;
+    } else if (role === "student" || role === "admin") {
+      NavbarComponent = PrivateNavbar;
+    }
   }
   return (
     <BrowserRouter>
@@ -107,9 +105,9 @@ export default function App() {
         />
         <Route
           element={
-            <instructor-course-sections>
+            <InstructorRoutes>
               <AddCourseSections />
-            </instructor-course-sections>
+            </InstructorRoutes>
           }
           path="/instructor-add-course-sections/:courseId"
         />
@@ -117,9 +115,9 @@ export default function App() {
         {/* admin course details */}
         <Route
           element={
-            <instructor-course-sections>
+            <InstructorRoutes>
               <CourseSections />
-            </instructor-course-sections>
+            </InstructorRoutes>
           }
           path="/instructor-course-sections/:courseId"
         />
@@ -239,10 +237,7 @@ export default function App() {
           }
           path="/progress-update/:courseId"
         />
-        <Route
-          element={<CourseChallengeAnnouncement />}
-          path="/reward-challenge"
-        />
+
         {/* register */}
       </Routes>
     </BrowserRouter>

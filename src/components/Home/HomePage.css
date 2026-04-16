@@ -1,0 +1,229 @@
+/* Nuclear fix for double scrollbars and white gaps */
+html, body {
+  background-color: #0B0F1A !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+}
+
+html {
+  overflow-y: auto !important;
+}
+
+body {
+  overflow: visible !important;
+}
+
+.home-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #0B0F1A;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  padding-top: 80px; 
+  overflow: visible !important;
+}
+
+.home-bg-glow {
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, transparent 70%);
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.glow-top-right {
+  top: -10%;
+  right: -10%;
+}
+
+.glow-bottom-left {
+  bottom: -10%;
+  left: -10%;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  padding: 120px 20px;
+  text-align: center;
+  z-index: 10;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 700px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #8A2BE2 0%, #4169E1 100%);
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Features grid */
+.features-section {
+  padding: 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.section-label {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: #00FFFF;
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  display: block;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-10px);
+}
+
+.feature-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  background: rgba(138, 43, 226, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  color: #00FFFF;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.feature-card p {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 100px 20px;
+  text-align: center;
+  background: linear-gradient(to bottom, transparent, rgba(138, 43, 226, 0.05));
+}
+
+.cta-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 60px 40px;
+  backdrop-filter: blur(20px);
+}
+
+.cta-card h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* Navbar specific override */
+.futuristic-nav {
+  background: rgba(11, 15, 26, 0.8) !important;
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #fff !important;
+}
+
+.nav-link.active {
+  color: #00FFFF !important;
+}

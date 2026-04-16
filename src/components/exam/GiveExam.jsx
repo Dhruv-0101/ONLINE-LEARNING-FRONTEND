@@ -1,321 +1,3 @@
-// import React, { useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
-// import { useQuery } from "@tanstack/react-query";
-// import {
-//   getExamDetailsAPI,
-//   submitExamAPI,
-// } from "../../reactQuery/courseSections/courseSectionsAPI"; // Import the API functions
-
-// const ExamDetails = () => {
-//   const { sectionId } = useParams();
-//   const navigate = useNavigate(); // Initialize navigate for redirection
-//   const [selectedAnswers, setSelectedAnswers] = useState({});
-//   const [submissionStatus, setSubmissionStatus] = useState(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false); // State to handle loading after submission
-
-//   // Query to fetch exam details
-//   const {
-//     data: exam,
-//     error,
-//     isLoading,
-//   } = useQuery({
-//     queryKey: ["exam", sectionId],
-//     queryFn: () => getExamDetailsAPI(sectionId),
-//   });
-
-//   const handleAnswerChange = (questionId, option) => {
-//     setSelectedAnswers((prev) => ({
-//       ...prev,
-//       [questionId]: option,
-//     }));
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!exam) return;
-
-//     const answers = Object.keys(selectedAnswers).map((questionId) => ({
-//       questionId,
-//       selectedOption: selectedAnswers[questionId],
-//     }));
-
-//     try {
-//       setIsSubmitting(true); // Set loading state
-//       const result = await submitExamAPI(sectionId, answers);
-//       setSubmissionStatus({ success: true, message: result.message });
-
-//       // Wait for 2 seconds, then redirect to exam results page
-//       setTimeout(() => {
-//         navigate(`/exam-results/${sectionId}`); // Redirect to exam results page
-//       }, 2000);
-//     } catch (error) {
-//       setSubmissionStatus({ success: false, message: error.message });
-//       setIsSubmitting(false); // Stop loading if there's an error
-//     }
-//   };
-
-//   if (isLoading) return <div>Loading...</div>;
-//   if (error) return <div>Error: {error.message}</div>;
-//   if (!exam) return <div>No exam details available</div>;
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       <div className="bg-white p-6 rounded-lg shadow-md">
-//         <h1 className="text-3xl font-bold mb-4">{exam.name}</h1>
-//         <p className="text-gray-700 mb-4">{exam.description}</p>
-//         <p className="text-gray-600 mb-6">Total Score: {exam.score}</p>
-
-//         <h2 className="text-2xl font-semibold mb-4">Questions</h2>
-//         {exam?.questions?.length === 0 ? (
-//           <p>No questions available for this exam.</p>
-//         ) : (
-//           <ul className="space-y-4">
-//             {exam?.questions?.map((question, index) => (
-//               <li key={index} className="border p-4 rounded-md">
-//                 <h3 className="text-lg font-semibold mb-2">
-//                   Question {index + 1}
-//                 </h3>
-//                 <p className="text-gray-800 mb-2">{question.question}</p>
-//                 <ul className="list-disc ml-5">
-//                   <li>
-//                     <input
-//                       type="radio"
-//                       id={`question${question._id}-A`}
-//                       name={`question${question._id}`}
-//                       value="A"
-//                       checked={selectedAnswers[question._id] === "optionA"}
-//                       onChange={() =>
-//                         handleAnswerChange(question._id, "optionA")
-//                       }
-//                     />
-//                     <label htmlFor={`question${question._id}-A`}>
-//                       <strong>A:</strong> {question.optionA}
-//                     </label>
-//                   </li>
-//                   <li>
-//                     <input
-//                       type="radio"
-//                       id={`question${question._id}-B`}
-//                       name={`question${question._id}`}
-//                       value="B"
-//                       checked={selectedAnswers[question._id] === "optionB"}
-//                       onChange={() =>
-//                         handleAnswerChange(question._id, "optionB")
-//                       }
-//                     />
-//                     <label htmlFor={`question${question._id}-B`}>
-//                       <strong>B:</strong> {question.optionB}
-//                     </label>
-//                   </li>
-//                   <li>
-//                     <input
-//                       type="radio"
-//                       id={`question${question._id}-C`}
-//                       name={`question${question._id}`}
-//                       value="C"
-//                       checked={selectedAnswers[question._id] === "optionC"}
-//                       onChange={() =>
-//                         handleAnswerChange(question._id, "optionC")
-//                       }
-//                     />
-//                     <label htmlFor={`question${question._id}-C`}>
-//                       <strong>C:</strong> {question.optionC}
-//                     </label>
-//                   </li>
-//                   <li>
-//                     <input
-//                       type="radio"
-//                       id={`question${question._id}-D`}
-//                       name={`question${question._id}`}
-//                       value="D"
-//                       checked={selectedAnswers[question._id] === "optionD"}
-//                       onChange={() =>
-//                         handleAnswerChange(question._id, "optionD")
-//                       }
-//                     />
-//                     <label htmlFor={`question${question._id}-D`}>
-//                       <strong>D:</strong> {question.optionD}
-//                     </label>
-//                   </li>
-//                 </ul>
-//               </li>
-//             ))}
-//           </ul>
-//         )}
-//         <button
-//           onClick={handleSubmit}
-//           className="mt-6 bg-blue-500 text-white py-2 px-4 rounded"
-//           disabled={isSubmitting} // Disable button while submitting
-//         >
-//           {isSubmitting ? "Submitting..." : "Submit Exam"}{" "}
-//           {/* Show loading text */}
-//         </button>
-//         {submissionStatus && (
-//           <div
-//             className={`mt-4 p-4 rounded ${
-//               submissionStatus.success
-//                 ? "bg-green-100 text-green-800"
-//                 : "bg-red-100 text-red-800"
-//             }`}
-//           >
-//             {submissionStatus.message}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ExamDetails;
-
-// import React, { useState, useEffect } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { useQuery } from "@tanstack/react-query";
-// import {
-//   getExamDetailsAPI,
-//   submitExamAPI,
-// } from "../../reactQuery/courseSections/courseSectionsAPI";
-
-// const ExamDetails = () => {
-//   const { sectionId } = useParams();
-//   const navigate = useNavigate();
-//   const [selectedAnswers, setSelectedAnswers] = useState({});
-//   const [submissionStatus, setSubmissionStatus] = useState(null);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [shuffledQuestions, setShuffledQuestions] = useState([]);
-
-//   const {
-//     data: exam,
-//     error,
-//     isLoading,
-//   } = useQuery({
-//     queryKey: ["exam", sectionId],
-//     queryFn: () => getExamDetailsAPI(sectionId),
-//   });
-
-//   const shuffleArray = (array) => {
-//     return array
-//       .map((value) => ({ value, sort: Math.random() }))
-//       .sort((a, b) => a.sort - b.sort)
-//       .map(({ value }) => value);
-//   };
-
-//   useEffect(() => {
-//     if (exam?.questions) {
-//       const shuffled = exam.questions.map((q) => {
-//         const options = [
-//           { key: "optionA", label: q.optionA },
-//           { key: "optionB", label: q.optionB },
-//           { key: "optionC", label: q.optionC },
-//           { key: "optionD", label: q.optionD },
-//         ];
-//         return {
-//           ...q,
-//           shuffledOptions: shuffleArray(options),
-//         };
-//       });
-//       setShuffledQuestions(shuffled);
-//     }
-//   }, [exam]);
-
-//   const handleAnswerChange = (questionId, optionKey) => {
-//     setSelectedAnswers((prev) => ({
-//       ...prev,
-//       [questionId]: optionKey,
-//     }));
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!exam) return;
-
-//     const answers = Object.keys(selectedAnswers).map((questionId) => ({
-//       questionId,
-//       selectedOption: selectedAnswers[questionId],
-//     }));
-
-//     try {
-//       setIsSubmitting(true);
-//       const result = await submitExamAPI(sectionId, answers);
-//       setSubmissionStatus({ success: true, message: result.message });
-
-//       setTimeout(() => {
-//         navigate(`/exam-results/${sectionId}`);
-//       }, 2000);
-//     } catch (error) {
-//       setSubmissionStatus({ success: false, message: error.message });
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   if (isLoading) return <div>Loading...</div>;
-//   if (error) return <div>Error: {error.message}</div>;
-//   if (!exam) return <div>No exam details available</div>;
-
-//   return (
-//     <div className="container mx-auto p-4">
-//       <div className="bg-white p-6 rounded-lg shadow-md">
-//         <h1 className="text-3xl font-bold mb-4">{exam.name}</h1>
-//         <p className="text-gray-700 mb-4">{exam.description}</p>
-//         <p className="text-gray-600 mb-6">Total Score: {exam.score}</p>
-
-//         <h2 className="text-2xl font-semibold mb-4">Questions</h2>
-//         {shuffledQuestions.length === 0 ? (
-//           <p>No questions available for this exam.</p>
-//         ) : (
-//           <ul className="space-y-4">
-//             {shuffledQuestions.map((question, index) => (
-//               <li key={index} className="border p-4 rounded-md">
-//                 <h3 className="text-lg font-semibold mb-2">
-//                   Question {index + 1}
-//                 </h3>
-//                 <p className="text-gray-800 mb-2">{question.question}</p>
-//                 <ul className="list-disc ml-5">
-//                   {question.shuffledOptions.map((option) => (
-//                     <li key={option.key}>
-//                       <input
-//                         type="radio"
-//                         id={`question${question._id}-${option.key}`}
-//                         name={`question${question._id}`}
-//                         value={option.key}
-//                         checked={selectedAnswers[question._id] === option.key}
-//                         onChange={() =>
-//                           handleAnswerChange(question._id, option.key)
-//                         }
-//                       />
-//                       <label htmlFor={`question${question._id}-${option.key}`}>
-//                         <strong>{option.key.slice(-1)}:</strong> {option.label}
-//                       </label>
-//                     </li>
-//                   ))}
-//                 </ul>
-//               </li>
-//             ))}
-//           </ul>
-//         )}
-//         <button
-//           onClick={handleSubmit}
-//           className="mt-6 bg-blue-500 text-white py-2 px-4 rounded"
-//           disabled={isSubmitting}
-//         >
-//           {isSubmitting ? "Submitting..." : "Submit Exam"}
-//         </button>
-//         {submissionStatus && (
-//           <div
-//             className={`mt-4 p-4 rounded ${
-//               submissionStatus.success
-//                 ? "bg-green-100 text-green-800"
-//                 : "bg-red-100 text-red-800"
-//             }`}
-//           >
-//             {submissionStatus.message}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ExamDetails;
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -323,6 +5,11 @@ import {
   getExamDetailsAPI,
   submitExamAPI,
 } from "../../reactQuery/courseSections/courseSectionsAPI";
+import { 
+  FiClock, FiAlertCircle, FiArrowRight, FiCheckCircle, 
+  FiShield, FiZap, FiActivity, FiLayers, FiInfo
+} from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ExamDetails = () => {
   const { sectionId } = useParams();
@@ -335,7 +22,7 @@ const ExamDetails = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [showReview, setShowReview] = useState(false);
-  const [reviewTimeLeft, setReviewTimeLeft] = useState(180); // 3 minutes for review
+  const [reviewTimeLeft, setReviewTimeLeft] = useState(180);
 
   const {
     data: exam,
@@ -356,10 +43,10 @@ const ExamDetails = () => {
     if (exam?.questions) {
       const shuffled = exam.questions.map((q) => {
         const options = [
-          { key: "optionA", label: q.optionA },
-          { key: "optionB", label: q.optionB },
-          { key: "optionC", label: q.optionC },
-          { key: "optionD", label: q.optionD },
+          { key: "optionA", label: q.optionA, id: 'A' },
+          { key: "optionB", label: q.optionB, id: 'B' },
+          { key: "optionC", label: q.optionC, id: 'C' },
+          { key: "optionD", label: q.optionD, id: 'D' },
         ];
         return {
           ...q,
@@ -382,24 +69,22 @@ const ExamDetails = () => {
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(timer);
     }
   }, [currentQuestionIndex, shuffledQuestions, showReview]);
 
   useEffect(() => {
     if (showReview) {
-      setReviewTimeLeft(180); // reset to 3 minutes
+      setReviewTimeLeft(180);
       const reviewTimer = setInterval(() => {
         setReviewTimeLeft((prev) => {
           if (prev === 1) {
             clearInterval(reviewTimer);
-            handleSubmit(); // auto-submit after 3 mins
+            handleSubmit();
           }
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(reviewTimer);
     }
   }, [showReview]);
@@ -421,7 +106,6 @@ const ExamDetails = () => {
 
   const handleSubmit = async () => {
     if (!exam) return;
-
     const answers = Object.keys(selectedAnswers).map((questionId) => ({
       questionId,
       selectedOption: selectedAnswers[questionId],
@@ -431,82 +115,88 @@ const ExamDetails = () => {
       setIsSubmitting(true);
       const result = await submitExamAPI(sectionId, answers);
       setSubmissionStatus({ success: true, message: result.message });
-
-      setTimeout(() => {
-        navigate(`/exam-results/${sectionId}`);
-      }, 2000);
+      setTimeout(() => navigate(`/exam-results/${sectionId}`), 2000);
     } catch (error) {
       setSubmissionStatus({ success: false, message: error.message });
       setIsSubmitting(false);
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!exam) return <div>No exam found</div>;
+  if (isLoading) return (
+    <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
+  );
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
   if (showReview) {
     return (
-      <div className="container mx-auto p-4">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-4">Review Your Answers</h1>
+      <div className="min-h-screen bg-[#0B0F1A] text-white py-24 px-6 relative overflow-x-hidden">
+        <div className="max-w-4xl mx-auto relative z-10">
+           <div className="flex items-center justify-between mb-12">
+              <div>
+                <h1 className="text-3xl font-black tracking-tighter mb-2">Final Review</h1>
+                <p className="text-sm text-gray-500 uppercase tracking-widest font-bold">Status: Quiz Review</p>
+              </div>
+              <div className="text-right">
+                 <div className="flex items-center gap-2 text-red-500 font-mono text-2xl mb-1">
+                    <FiClock /> {formatTime(reviewTimeLeft)}
+                 </div>
+                 <p className="text-[10px] text-gray-600 uppercase font-black">Time remaining</p>
+              </div>
+           </div>
 
-          <div className="text-red-600 font-bold text-lg mb-4">
-            Review Time Left: {reviewTimeLeft}s
-          </div>
+           <div className="space-y-6 mb-12">
+              {shuffledQuestions?.map((question, index) => (
+                <div key={question?._id} className="p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 hover:border-blue-500/20 transition-all">
+                   <div className="flex items-start gap-6">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500 font-black shrink-0">
+                         {index + 1}
+                      </div>
+                      <div className="flex-1">
+                         <h3 className="text-lg font-bold text-gray-200 mb-6">{question?.question}</h3>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {question?.shuffledOptions?.map((option) => (
+                              <button
+                                key={option?.key}
+                                onClick={() => handleAnswerChange(question?._id, option?.key)}
+                                className={`p-4 rounded-2xl border text-left text-sm transition-all flex items-center gap-3 ${
+                                  selectedAnswers?.[question?._id] === option?.key 
+                                  ? 'bg-blue-600 border-blue-400 text-white shadow-lg' 
+                                  : 'bg-black/20 border-white/5 text-gray-500 hover:border-white/20'
+                                }`}
+                              >
+                                <span className="w-6 h-6 rounded-lg bg-black/20 flex items-center justify-center text-[10px] font-black">{option.id}</span>
+                                {option?.label}
+                              </button>
+                            ))}
+                         </div>
+                      </div>
+                   </div>
+                </div>
+              ))}
+           </div>
 
-          {shuffledQuestions?.map((question, index) => (
-            <div
-              key={question?._id}
-              className="mb-4 border p-4 rounded bg-gray-50"
-            >
-              <h3 className="font-semibold mb-2">
-                {index + 1}. {question?.question}
-              </h3>
-              <ul className="ml-5">
-                {question?.shuffledOptions?.map((option) => (
-                  <li key={option?.key}>
-                    <input
-                      type="radio"
-                      id={`${question?._id}-${option?.key}`}
-                      name={`question-${question?._id}`}
-                      value={option?.key}
-                      checked={selectedAnswers?.[question?._id] === option?.key}
-                      onChange={() =>
-                        handleAnswerChange(question?._id, option?.key)
-                      }
-                    />
-                    <label
-                      htmlFor={`${question?._id}-${option?.key}`}
-                      className="ml-1"
-                    >
-                      <strong>{option?.key?.slice(-1)}:</strong> {option?.label}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
-          >
-            {isSubmitting ? "Submitting..." : "Submit Final Answers"}
-          </button>
-
-          {submissionStatus && (
-            <div
-              className={`mt-4 p-4 rounded ${
-                submissionStatus.success
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
-              {submissionStatus.message}
-            </div>
-          )}
+           <div className="flex justify-center">
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="px-12 py-5 rounded-3xl bg-green-600 hover:bg-green-500 text-sm font-black uppercase tracking-[0.2em] transition-all shadow-[0_10px_40px_rgba(22,163,74,0.3)] flex items-center gap-3"
+              >
+                {isSubmitting ? "Submitting Quiz..." : <><span>Submit Assessment</span> <FiCheckCircle /></>}
+              </button>
+           </div>
+           
+           {submissionStatus && (
+             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className={`mt-8 p-6 rounded-3xl text-center font-black uppercase tracking-widest text-xs border ${submissionStatus.success ? 'bg-green-500/10 border-green-500/20 text-green-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
+                {submissionStatus.message}
+             </motion.div>
+           )}
         </div>
       </div>
     );
@@ -515,55 +205,98 @@ const ExamDetails = () => {
   const currentQuestion = shuffledQuestions?.[currentQuestionIndex];
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-4">{exam?.name}</h1>
-        <p className="mb-2 text-gray-700">{exam?.description}</p>
-        <p className="mb-6 text-gray-600">Total Score: {exam?.score}</p>
-
-        <div className="text-xl font-bold text-red-600 mb-4">
-          Time Left: {timeLeft}s
+    <div className="min-h-screen bg-[#0B0F1A] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Grid Accent */}
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(37,99,235,0.05)_0%,_transparent_100%)]"></div>
+      
+      <div className="max-w-4xl w-full relative z-10">
+        {/* PROGRESS HUD */}
+        <div className="flex items-center justify-between mb-12">
+           <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600 shadow-[0_0_20px_#2563eb] flex items-center justify-center">
+                 <FiShield size={24} />
+              </div>
+              <div>
+                 <h2 className="text-xl font-black tracking-tight">{exam?.name}</h2>
+                 <p className="text-[10px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-2">
+                    <FiLayers /> Question {currentQuestionIndex + 1} / {shuffledQuestions.length}
+                 </p>
+              </div>
+           </div>
+           <div className="text-right">
+              <div className={`text-3xl font-mono font-black mb-1 ${timeLeft < 10 ? 'text-red-500 animate-pulse' : 'text-blue-500'}`}>
+                 {formatTime(timeLeft)}
+              </div>
+              <p className="text-[10px] text-gray-600 uppercase font-black">Time remaining</p>
+           </div>
         </div>
 
-        <div className="border p-4 rounded-md mb-4">
-          <h3 className="text-lg font-semibold mb-2">
-            Question {currentQuestionIndex + 1}
-          </h3>
-          <p className="text-gray-800 mb-2">{currentQuestion?.question}</p>
-          <ul className="ml-5">
-            {currentQuestion?.shuffledOptions?.map((option) => (
-              <li key={option?.key}>
-                <input
-                  type="radio"
-                  id={`${currentQuestion?._id}-${option?.key}`}
-                  name={`question-${currentQuestion?._id}`}
-                  value={option?.key}
-                  checked={
-                    selectedAnswers?.[currentQuestion?._id] === option?.key
-                  }
-                  onChange={() =>
-                    handleAnswerChange(currentQuestion?._id, option?.key)
-                  }
-                />
-                <label
-                  htmlFor={`${currentQuestion?._id}-${option?.key}`}
-                  className="ml-1"
-                >
-                  <strong>{option?.key?.slice(-1)}:</strong> {option?.label}
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* THE QUESTION TERMINAL */}
+        <AnimatePresence mode="wait">
+           <motion.div 
+             key={currentQuestionIndex}
+             initial={{ x: 50, opacity: 0 }}
+             animate={{ x: 0, opacity: 1 }}
+             exit={{ x: -50, opacity: 0 }}
+             className="relative p-12 rounded-[4rem] bg-white/[0.03] border border-white/5 backdrop-blur-3xl shadow-3xl mb-12"
+           >
+              {/* Question Index Badge */}
+              <div className="absolute -top-6 left-12 px-8 py-3 rounded-full bg-blue-600 text-[11px] font-black uppercase tracking-widest shadow-xl">
+                 Question #{currentQuestionIndex + 1}
+              </div>
 
-        <button
-          onClick={goToNextQuestion}
-          className="bg-yellow-500 text-white py-2 px-4 rounded"
-        >
-          {currentQuestionIndex === shuffledQuestions?.length - 1
-            ? "Review Answers"
-            : "Next"}
-        </button>
+              <div className="mb-12">
+                <h3 className="text-2xl md:text-3xl font-black leading-tight text-gray-100">
+                   {currentQuestion?.question}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {currentQuestion?.shuffledOptions?.map((option) => (
+                   <button
+                     key={option.key}
+                     onClick={() => handleAnswerChange(currentQuestion?._id, option.key)}
+                     className={`group p-6 rounded-[2rem] border-2 text-left transition-all duration-300 relative overflow-hidden flex items-center gap-6 ${
+                       selectedAnswers?.[currentQuestion?._id] === option.key 
+                       ? 'bg-blue-600 border-blue-400 text-white shadow-[0_20px_40px_rgba(37,99,235,0.3)]' 
+                       : 'bg-black/40 border-white/5 hover:border-white/20 text-gray-400'
+                     }`}
+                   >
+                     {/* Choice ID Circle */}
+                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs shrink-0 transition-colors ${
+                        selectedAnswers?.[currentQuestion?._id] === option.key ? 'bg-white/20' : 'bg-white/5 group-hover:bg-white/10'
+                     }`}>
+                        {option.id}
+                     </div>
+                     <span className="text-sm font-bold">{option.label}</span>
+
+                     {/* Highlight effect */}
+                     {selectedAnswers?.[currentQuestion?._id] === option.key && (
+                       <motion.div layoutId="choice-glow" className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-transparent pointer-events-none" />
+                     )}
+                   </button>
+                 ))}
+              </div>
+           </motion.div>
+        </AnimatePresence>
+
+        {/* ACTIONS */}
+        <div className="flex items-center justify-between">
+           <div className="flex items-center gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+              <FiInfo className="text-blue-500" />
+              <p className="text-[10px] text-gray-500 leading-tight">
+                 SELECT THE CORRECT ANSWER TO COMPLETE THIS SECTION.<br/>
+                 NO PENALTY FOR INCORRECT ANSWERS.
+              </p>
+           </div>
+           <button
+             onClick={goToNextQuestion}
+             className="group px-10 py-5 rounded-[2rem] bg-white text-black text-sm font-black uppercase tracking-widest flex items-center gap-4 hover:bg-blue-500 hover:text-white transition-all duration-500"
+           >
+             {currentQuestionIndex === shuffledQuestions?.length - 1 ? "Review Answers" : "Next Question"}
+             <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
+           </button>
+        </div>
       </div>
     </div>
   );

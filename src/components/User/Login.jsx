@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { AiOutlineEye, AiOutlineMail } from "react-icons/ai";
-import { RiLockPasswordLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { FiMail, FiLock, FiShield, FiSearch, FiVideo, FiClipboard, FiTrendingUp, FiEdit3 } from "react-icons/fi";
+import { FaCubes } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { checkUserAuthStatus } from "../../redux/slices/authSlice";
 import {
   checkUserAuthStatusAPI,
   loginAPI,
 } from "../../reactQuery/user/usersAPI";
 import AlertMessage from "../Alert/AlertMessage";
-import { useDispatch } from "react-redux";
-import { FiMail, FiLock } from "react-icons/fi";
-import { checkUserAuthStatus } from "../../redux/slices/authSlice";
+import "./Auth.css";
 
-// Validation schema using Yup
 const validationSchema = Yup.object({
   email: Yup.string()
     .email("Enter a valid email")
@@ -26,133 +26,182 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { isAuthenticated, userProfile } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const data = await checkUserAuthStatusAPI();
-        if (data.isAuthenticated) {
-          navigate(-1);
-        }
-      } catch (error) {
-        console.error("Failed to check authentication status", error);
-      }
-    };
+    if (isAuthenticated) {
+      if (userProfile?.role === "student") navigate("/student-dashboard");
+      else if (userProfile?.role === "instructor") navigate("/instructor-courses");
+    }
+  }, [isAuthenticated, userProfile, navigate]);
 
-    checkAuthStatus();
-  }, [navigate]);
-
-  //---mutation
   const mutation = useMutation({ mutationFn: loginAPI });
-  // Formik setup for form handling
+
   const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
+    initialValues: { email: "", password: "" },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       mutation.mutateAsync(values).then((data) => {
-        //redirect if user is authenticated
         if (data) {
           navigate("/student-dashboard");
-          //dispatch login action
           dispatch(checkUserAuthStatus());
         }
       });
-      //reset form
-      formik.resetForm();
     },
   });
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { staggerChildren: 0.1, duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
-      <div className="max-w-sm w-full bg-white rounded-xl shadow-md p-8">
-        <form onSubmit={formik.handleSubmit} className="space-y-6">
-          <h1 className="text-2xl font-semibold text-gray-800 text-center">
-            Sign In
-          </h1>
+    <div className="auth-wrapper">
+      <div className="auth-bg-glow glow-1"></div>
+      <div className="auth-bg-glow glow-2"></div>
+
+      <motion.div 
+        className="auth-container"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="auth-form-side">
+          {/* Logo Section */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <Link to="/" className="inline-flex items-center gap-2 group transition-all duration-300">
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-all">
+                <FaCubes className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">
+                Skill Buddy
+              </span>
+            </Link>
+          </motion.div>
+
+          <div className="auth-header text-left">
+            <motion.h1 variants={itemVariants}>Welcome Back</motion.h1>
+            {/* <motion.p variants={itemVariants}>Initialize session to access Skill Buddy ecosystem</motion.p> */}
+          </div>
 
           {mutation.isError && (
             <AlertMessage
               type="error"
-              message={mutation.error.response?.data?.message}
+              message={mutation.error.response?.data?.message || "Login Error"}
             />
           )}
 
-          {mutation.isSuccess && (
-            <AlertMessage
-              type="success"
-              message="Login success you will be redirected soon..."
-            />
-          )}
+          <form onSubmit={formik.handleSubmit} className="space-y-2">
+            <motion.div className="input-group" variants={itemVariants}>
+              <div className={`input-wrapper ${formik.touched.email && formik.errors.email ? 'border-red-500/50' : ''}`}>
+                <FiMail className="input-icon" />
+                <input
+                  type="email"
+                  {...formik.getFieldProps("email")}
+                  placeholder="Enter Email"
+                />
+              </div>
+              {formik.touched.email && formik.errors.email && (
+                <div className="err-msg">{formik.errors.email}</div>
+              )}
+            </motion.div>
 
-          <Link
-            to="/register"
-            className="text-sm text-indigo-600 hover:text-indigo-700 transition duration-200 block text-center mb-6"
-          >
-            New here? <span className="font-medium">Create an account</span>
-          </Link>
+            <motion.div className="input-group" variants={itemVariants}>
+              <div className={`input-wrapper ${formik.touched.password && formik.errors.password ? 'border-red-500/50' : ''}`}>
+                <FiLock className="input-icon" />
+                <input
+                  type="password"
+                  {...formik.getFieldProps("password")}
+                  placeholder="Enter Password"
+                />
+              </div>
+              {formik.touched.password && formik.errors.password && (
+                <div className="err-msg">{formik.errors.password}</div>
+              )}
+            </motion.div>
 
-          <div className="flex items-center bg-gray-100 rounded-full px-3 py-2">
-            <FiMail className="text-gray-500" />
-            <input
-              type="email"
-              id="email"
-              {...formik.getFieldProps("email")}
-              className="w-full bg-transparent focus:ring-0 placeholder-gray-400 ml-2"
-              placeholder="Email address"
-            />
-          </div>
-          {formik.touched.email && formik.errors.email && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.email}
-            </div>
-          )}
-
-          <div className="flex items-center bg-gray-100 rounded-full px-3 py-2">
-            <FiLock className="text-gray-500" />
-            <input
-              type="password"
-              id="password"
-              {...formik.getFieldProps("password")}
-              className="w-full bg-transparent focus:ring-0 placeholder-gray-400 ml-2"
-              placeholder="Password"
-            />
-          </div>
-          {formik.touched.password && formik.errors.password && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.password}
-            </div>
-          )}
-
-          <button
-            className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 font-medium rounded-full text-sm px-5 py-2.5 text-center"
-            type="submit"
-          >
-            Log in
-          </button>
-          {/* New two-step authentication button */}
-          <button
-            className="h-14 inline-flex items-center justify-center gap-2 py-4 px-6 rounded-full bg-blue-500 w-full text-white font-bold font-heading shadow hover:bg-blue-600 focus:ring focus:ring-blue-200 transition duration-200"
-            type="button"
-            onClick={() => navigate("/login-with-passkey")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={21}
-              height={21}
-              viewBox="0 0 21 21"
-              fill="none"
+            <motion.button 
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="submit-btn" 
+              type="submit"
+              disabled={mutation.isPending}
             >
-              <path
-                d="M10.5 1.5C5.80558 1.5 2 5.30558 2 10C2 14.6944 5.80558 18.5 10.5 18.5C15.1944 18.5 19 14.6944 19 10C19 5.30558 15.1944 1.5 10.5 1.5ZM11.35 15.15L10.5 16L9.65 15.15L6.35 11.85L7.2 11L10.5 14.3L13.8 11L14.65 11.85L11.35 15.15ZM10.5 9.3C9.67157 9.3 9 8.62843 9 7.8C9 6.97157 9.67157 6.3 10.5 6.3C11.3284 6.3 12 6.97157 12 7.8C12 8.62843 11.3284 9.3 10.5 9.3Z"
-                fill="white"
-              />
-            </svg>
-            Login With Two-step Authentication
-          </button>
-        </form>
-      </div>
+              {mutation.isPending ? "Validating..." : "Continue"}
+            </motion.button>
+
+            <motion.div variants={itemVariants} className="relative py-4">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10"></span></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-[#12141f] px-2 text-gray-500">Secondary Methods</span></div>
+            </motion.div>
+
+            <motion.button
+              variants={itemVariants}
+              className="passkey-btn"
+              type="button"
+              onClick={() => navigate("/login-with-passkey")}
+            >
+              <FiShield /> Two-Step Authentication
+            </motion.button>
+          </form>
+
+          <motion.div className="alt-action" variants={itemVariants}>
+            New user? 
+            <Link to="/register" className="alt-link">Sign Up</Link>
+          </motion.div>
+        </div>
+
+        <div className="auth-info-side">
+          <h3 className="info-title">Student Benefits</h3>
+          <div className="feature-list">
+            <motion.div className="feature-item-small" variants={itemVariants}>
+              <div className="feature-item-small-icon"><FiSearch /></div>
+              <div className="feature-item-small-text">
+                <h4>Browse & Enroll</h4>
+                <p>Explore a wide variety of courses and easily join any learning path.</p>
+              </div>
+            </motion.div>
+            <motion.div className="feature-item-small" variants={itemVariants}>
+              <div className="feature-item-small-icon" style={{color: '#3B82F6', background: 'rgba(59, 130, 246, 0.1)'}}><FiVideo /></div>
+              <div className="feature-item-small-text">
+                <h4>Immersive Content</h4>
+                <p>Access high-quality video lessons and join our global study community.</p>
+              </div>
+            </motion.div>
+            <motion.div className="feature-item-small" variants={itemVariants}>
+              <div className="feature-item-small-icon" style={{color: '#A855F7', background: 'rgba(168, 85, 247, 0.1)'}}><FiClipboard /></div>
+              <div className="feature-item-small-text">
+                <h4>Skill Evaluation</h4>
+                <p>Test your knowledge through interactive exams built by instructors.</p>
+              </div>
+            </motion.div>
+            <motion.div className="feature-item-small" variants={itemVariants}>
+              <div className="feature-item-small-icon" style={{color: '#34D399', background: 'rgba(52, 211, 153, 0.1)'}}><FiTrendingUp /></div>
+              <div className="feature-item-small-text">
+                <h4>Real-time Tracking</h4>
+                <p>Track your learning progress and view your performance metrics.</p>
+              </div>
+            </motion.div>
+            <motion.div className="feature-item-small" variants={itemVariants}>
+              <div className="feature-item-small-icon" style={{color: '#F472B6', background: 'rgba(244, 114, 182, 0.1)'}}><FiEdit3 /></div>
+              <div className="feature-item-small-text">
+                <h4>Dynamic Notes</h4>
+                <p>Take important notes with timestamps directly while watching lessons.</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

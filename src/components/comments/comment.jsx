@@ -1,265 +1,5 @@
-// import React, { useState } from "react";
-// import { useParams } from "react-router-dom";
-// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import {
-//   getCommentsAPI,
-//   postCommentAPI,
-//   replyToCommentAPI,
-// } from "../../reactQuery/courseSections/courseSectionsAPI";
-// import { format } from "date-fns"; // Import date-fns for formatting
-// import { FaRegClock } from "react-icons/fa"; // Import watch icon
-
-// const CommentsPage = () => {
-//   const { videoId } = useParams();
-//   const queryClient = useQueryClient();
-
-//   // Error state
-//   const [errorMessage, setErrorMessage] = useState("");
-
-//   // State for managing visibility of new comment input
-//   const [showNewComment, setShowNewComment] = useState(false);
-
-//   // State for managing reply inputs and visibility
-//   const [replies, setReplies] = useState({});
-//   const [showReplyInput, setShowReplyInput] = useState({}); // Object to manage visibility for each comment
-//   const [visibleReplies, setVisibleReplies] = useState({}); // Object to manage visible replies for each comment
-
-//   // Fetch comments for the video
-//   const {
-//     data: comments,
-//     isLoading,
-//     isError: isQueryError,
-//     error: queryError,
-//   } = useQuery({
-//     queryKey: ["comments", videoId],
-//     queryFn: () => getCommentsAPI(videoId),
-//   });
-
-//   const [newComment, setNewComment] = useState("");
-
-//   const { mutate: postComment } = useMutation({
-//     mutationFn: (comment) => postCommentAPI(videoId, comment),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries(["comments", videoId]);
-//       setNewComment("");
-//       setShowNewComment(false); // Hide the new comment input on success
-//       setErrorMessage(""); // Clear error message on success
-//     },
-//     onError: (error) => {
-//       setErrorMessage(
-//         error.response?.data?.message ||
-//           "An error occurred while posting the comment."
-//       );
-//     },
-//   });
-
-//   const { mutate: postReply } = useMutation({
-//     mutationFn: ({ commentId, text }) => replyToCommentAPI(commentId, text),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries(["comments", videoId]);
-//       // Clear all reply inputs after success
-//       setReplies({});
-//       setShowReplyInput({});
-//       setVisibleReplies({});
-//       setErrorMessage(""); // Clear error message on success
-//     },
-//     onError: (error) => {
-//       setErrorMessage(
-//         error.response?.data?.message ||
-//           "An error occurred while posting the reply."
-//       );
-//     },
-//   });
-
-//   const handlePostComment = (e) => {
-//     e.preventDefault();
-//     if (newComment.trim()) {
-//       postComment(newComment);
-//     }
-//   };
-
-//   const handleReplyChange = (commentId, text) => {
-//     setReplies((prevReplies) => ({
-//       ...prevReplies,
-//       [commentId]: text,
-//     }));
-//   };
-
-//   const handleReplySubmit = (commentId, e) => {
-//     e.preventDefault();
-//     const text = replies[commentId];
-//     if (text.trim()) {
-//       postReply({ commentId, text }); // Pass commentId and text as replyData
-//     }
-//   };
-
-//   const toggleReplyInput = (commentId) => {
-//     setShowReplyInput((prev) => ({
-//       ...prev,
-//       [commentId]: !prev[commentId],
-//     }));
-//   };
-
-//   const toggleNewCommentInput = () => {
-//     setShowNewComment((prev) => !prev);
-//   };
-
-//   // Load more replies function
-//   const loadMoreReplies = (commentId) => {
-//     setVisibleReplies((prevVisible) => ({
-//       ...prevVisible,
-//       [commentId]: (prevVisible[commentId] || 3) + 3,
-//     }));
-//   };
-
-//   return (
-//     <div className="container mx-auto p-8 bg-gray-50 rounded-xl shadow-lg">
-//       <h1 className="text-3xl font-bold text-gray-900 mb-6">Comments</h1>
-
-//       {/* Error Message */}
-//       {errorMessage && (
-//         <div className="bg-red-100 text-red-800 p-4 mb-6 rounded-lg">
-//           {errorMessage}
-//         </div>
-//       )}
-
-//       {/* New Comment Button */}
-//       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-//         <button
-//           onClick={toggleNewCommentInput}
-//           className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition duration-200"
-//         >
-//           {showNewComment ? "Cancel" : "Post a Comment"}
-//         </button>
-
-//         {showNewComment && (
-//           <form onSubmit={handlePostComment} className="mt-4">
-//             <textarea
-//               value={newComment}
-//               onChange={(e) => setNewComment(e.target.value)}
-//               rows="4"
-//               className="w-full p-3 border border-gray-300 rounded-lg mb-4"
-//               placeholder="Write your comment here..."
-//             />
-//             <button
-//               type="submit"
-//               className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded transition duration-200"
-//             >
-//               Post Comment
-//             </button>
-//           </form>
-//         )}
-//       </div>
-
-//       {/* Comments List */}
-//       <div className="space-y-4">
-//         {isLoading ? (
-//           <p>Loading comments...</p>
-//         ) : isQueryError ? (
-//           <p>Error loading comments.</p>
-//         ) : (
-//           comments?.map((comment) => (
-//             <div
-//               key={comment._id}
-//               className="bg-white p-4 border border-gray-300 rounded-lg"
-//             >
-//               <div className="flex flex-col">
-//                 {/* Comment Creator and Reply Button */}
-//                 <div className="flex justify-between items-center mb-2">
-//                   <div className="flex-grow">
-//                     <p className="text-gray-800">{comment.commentText}</p>
-//                   </div>
-//                   <div className="flex items-center space-x-2">
-//                     <FaRegClock className="text-gray-500" />
-//                     <p className="text-gray-600 text-sm">
-//                       commented By {comment.user.username} on{" "}
-//                       {format(new Date(comment.createdAt), "PPPpp")}
-//                     </p>
-//                   </div>
-//                 </div>
-
-//                 <div className="flex justify-between items-center">
-//                   <button
-//                     onClick={() => toggleReplyInput(comment._id)}
-//                     className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-1 px-4 rounded transition duration-200"
-//                   >
-//                     {showReplyInput[comment._id] ? "Cancel Reply" : "Reply"}
-//                   </button>
-//                 </div>
-
-//                 {/* Reply Input Form */}
-//                 {showReplyInput[comment._id] && (
-//                   <form
-//                     onSubmit={(e) => handleReplySubmit(comment._id, e)}
-//                     className="mt-4"
-//                   >
-//                     <textarea
-//                       value={replies[comment._id] || ""}
-//                       onChange={(e) =>
-//                         handleReplyChange(comment._id, e.target.value)
-//                       }
-//                       rows="2"
-//                       className="w-full p-2 border border-gray-300 rounded-lg"
-//                       placeholder="Write a reply..."
-//                     />
-//                     <button
-//                       type="submit"
-//                       className="bg-blue-600 hover:bg-blue-800 text-white font-semibold py-1 px-4 rounded mt-2 transition duration-200"
-//                     >
-//                       Reply
-//                     </button>
-//                   </form>
-//                 )}
-
-//                 {/* Replies */}
-//                 {comment.replies && comment.replies.length > 0 && (
-//                   <div className="mt-4 space-y-2">
-//                     {comment.replies
-//                       .slice(0, visibleReplies[comment._id] || 3)
-//                       .map((reply) => (
-//                         <div
-//                           key={reply._id}
-//                           className="bg-gray-100 p-3 border border-gray-200 rounded-lg"
-//                         >
-//                           <div className="flex justify-between items-center mb-1">
-//                             <p className="text-gray-800 mb-1">
-//                               {reply.replyText}
-//                             </p>
-//                             <div className="flex items-center space-x-2">
-//                               <FaRegClock className="text-gray-500" />
-//                               <p className="text-gray-600 text-sm">
-//                                 Replied By {reply.user.username} on{" "}
-//                                 {format(new Date(reply.createdAt), "PPPpp")}
-//                               </p>
-//                             </div>
-//                           </div>
-//                         </div>
-//                       ))}
-
-//                     {comment.replies.length >
-//                       (visibleReplies[comment._id] || 3) && (
-//                       <button
-//                         onClick={() => loadMoreReplies(comment._id)}
-//                         className="text-blue-600 hover:underline"
-//                       >
-//                         Load More Replies
-//                       </button>
-//                     )}
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-//           ))
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CommentsPage;
-
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getCommentsAPI,
@@ -267,14 +7,18 @@ import {
   replyToCommentAPI,
 } from "../../reactQuery/courseSections/courseSectionsAPI";
 import { format } from "date-fns";
-import { FaRegClock } from "react-icons/fa";
+import { 
+  FiClock, FiMessageCircle, FiCornerDownRight, 
+  FiSend, FiChevronLeft, FiUser, FiActivity, FiLayers
+} from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CommentsPage = () => {
   const { videoId } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [showNewComment, setShowNewComment] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [replies, setReplies] = useState({});
   const [showReplyInput, setShowReplyInput] = useState({});
@@ -289,206 +33,233 @@ const CommentsPage = () => {
     queryFn: () => getCommentsAPI(videoId),
   });
 
-  const { mutate: postComment } = useMutation({
+  const { mutate: postComment, isPending: isPosting } = useMutation({
     mutationFn: (comment) => postCommentAPI(videoId, comment),
     onSuccess: () => {
       queryClient.invalidateQueries(["comments", videoId]);
       setNewComment("");
-      setShowNewComment(false);
       setErrorMessage("");
     },
     onError: (error) => {
-      setErrorMessage(
-        error.response?.data?.message || "Error posting comment."
-      );
+      setErrorMessage(error.response?.data?.message || "Submission failed.");
     },
   });
 
-  const { mutate: postReply } = useMutation({
+  const { mutate: postReply, isPending: isReplying } = useMutation({
     mutationFn: ({ commentId, text }) => replyToCommentAPI(commentId, text),
     onSuccess: () => {
       queryClient.invalidateQueries(["comments", videoId]);
       setReplies({});
       setShowReplyInput({});
-      setVisibleReplies({});
       setErrorMessage("");
     },
     onError: (error) => {
-      setErrorMessage(error.response?.data?.message || "Error posting reply.");
+      setErrorMessage(error.response?.data?.message || "Reply failed.");
     },
   });
 
   const handlePostComment = (e) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      postComment(newComment);
-    }
-  };
-
-  const handleReplyChange = (commentId, text) => {
-    setReplies((prev) => ({ ...prev, [commentId]: text }));
+    if (newComment.trim()) postComment(newComment);
   };
 
   const handleReplySubmit = (commentId, e) => {
     e.preventDefault();
     const text = replies[commentId];
-    if (text.trim()) {
-      postReply({ commentId, text });
-    }
+    if (text?.trim()) postReply({ commentId, text });
   };
 
-  const toggleReplyInput = (commentId) => {
-    setShowReplyInput((prev) => ({ ...prev, [commentId]: !prev[commentId] }));
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
-  const loadMoreReplies = (commentId) => {
-    setVisibleReplies((prev) => ({
-      ...prev,
-      [commentId]: (prev[commentId] || 3) + 3,
-    }));
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
   };
+
+  if (isLoading) return (
+    <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
+  );
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Comments</h2>
+    <div className="min-h-screen bg-[#0B0F1A] text-white pt-24 pb-20 px-6">
+      {/* Background Decor */}
+      <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,_rgba(37,99,235,0.05)_0%,_transparent_50%)] pointer-events-none"></div>
 
-      {errorMessage && (
-        <div className="bg-red-100 text-red-700 p-4 mb-6 rounded-md">
-          {errorMessage}
+      <div className="max-w-4xl mx-auto relative z-10">
+        {/* Header Bar */}
+        <div className="flex items-center justify-between mb-12">
+           <button 
+             onClick={() => navigate(-1)} 
+             className="flex items-center gap-2 group text-gray-400 hover:text-white transition-all bg-white/5 px-4 py-2 rounded-xl border border-white/5 hover:border-white/10"
+           >
+             <FiChevronLeft className="group-hover:-translate-x-1 transition-transform" />
+             <span className="text-[10px] font-black uppercase tracking-widest">Back to Lessons</span>
+           </button>
+           <h1 className="text-xl font-black tracking-tight flex items-center gap-3">
+             <FiMessageCircle className="text-blue-500" /> Community Discussions
+           </h1>
         </div>
-      )}
 
-      {/* Post a new comment */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowNewComment((prev) => !prev)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-md"
+        {/* Global Transmission Field (New Comment) */}
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="mb-16 p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-xl shadow-2xl"
         >
-          {showNewComment ? "Cancel" : "Add a Comment"}
-        </button>
-        {showNewComment && (
-          <form onSubmit={handlePostComment} className="mt-4 space-y-4">
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              rows="4"
-              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Write a comment..."
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow-md"
-            >
-              Post
-            </button>
+          <div className="flex items-center gap-3 mb-6">
+             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <FiActivity size={18} />
+             </div>
+             <h3 className="text-sm font-black uppercase tracking-widest">Post a Comment</h3>
+          </div>
+          <form onSubmit={handlePostComment} className="relative">
+             <textarea
+               value={newComment}
+               onChange={(e) => setNewComment(e.target.value)}
+               placeholder="Share your thoughts or ask a question..."
+               className="w-full h-32 bg-black/40 border border-white/5 rounded-2xl p-6 text-sm text-gray-300 focus:border-blue-500/30 outline-none transition-all resize-none mb-4"
+             />
+             <div className="flex items-center justify-between">
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest px-2">Public Comment Section</p>
+                <button
+                  type="submit"
+                  disabled={isPosting || !newComment.trim()}
+                  className="px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-lg hover:shadow-blue-600/20 disabled:opacity-30"
+                >
+                  {isPosting ? "Posting..." : <><span>Post Comment</span> <FiSend /></>}
+                </button>
+             </div>
           </form>
-        )}
-      </div>
+           {errorMessage && <p className="mt-4 text-xs font-bold text-red-500 uppercase tracking-widest flex items-center gap-2 px-2"><FiActivity /> {errorMessage}</p>}
+        </motion.div>
 
-      {/* Comment List */}
-      <div className="space-y-6">
-        {isLoading ? (
-          <p className="text-center text-gray-500">Loading comments...</p>
-        ) : isQueryError ? (
-          <p className="text-center text-red-500">Failed to load comments.</p>
-        ) : (
-          comments?.map((comment) => (
-            <div
-              key={comment._id}
-              className="flex gap-4 border-b border-gray-300 pb-4"
-            >
-              <div className="flex-shrink-0">
-                <img
-                  src={`https://ui-avatars.com/api/?name=${comment.user.username}`}
-                  alt="avatar"
-                  className="w-12 h-12 rounded-full"
-                />
-              </div>
-              <div className="flex-1">
-                <div className="bg-gray-100 rounded-lg p-4 shadow-sm">
-                  <div className="text-lg font-semibold text-gray-800">
-                    {comment.user.username}
-                  </div>
-                  <p className="text-gray-700 mt-2">{comment.commentText}</p>
-                  <div className="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                    <FaRegClock />
-                    {format(new Date(comment.createdAt), "PPPpp")}
-                  </div>
+        {/* Intelligence Feed */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
+        >
+          {comments?.length === 0 ? (
+            <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[3rem] opacity-20">
+               <p className="text-[10px] uppercase tracking-[0.4rem] font-black">No comments found. Be the first to start the conversation!</p>
+            </div>
+          ) : (
+            comments?.map((comment) => (
+              <motion.div 
+                key={comment._id} 
+                variants={itemVariants}
+                className="group relative"
+              >
+                {/* Connector Line for Replies */}
+                {comment.replies?.length > 0 && <div className="absolute left-6 top-16 bottom-0 w-px bg-white/5 group-hover:bg-blue-500/20 transition-colors"></div>}
+
+                <div className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-all relative z-10">
+                   <div className="flex items-start gap-4">
+                      {/* Operative Avatar */}
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/10 border border-white/10 flex items-center justify-center text-blue-400 font-black shrink-0 shadow-inner">
+                         {comment.user?.username?.charAt(0).toUpperCase()}
+                      </div>
+                      
+                      <div className="flex-1">
+                         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                            <div className="flex items-center gap-3">
+                               <h4 className="font-black text-sm text-gray-200">{comment.user?.username}</h4>
+                               <span className="text-[8px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-black uppercase tracking-widest">Student</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-500 font-mono">
+                               <FiClock size={12} />
+                               {format(new Date(comment.createdAt), "PPP")}
+                            </div>
+                         </div>
+                         
+                         <p className="text-sm text-gray-400 leading-relaxed mb-6 group-hover:text-gray-200 transition-colors">{comment.commentText}</p>
+
+                         <div className="flex items-center gap-4">
+                            <button
+                              onClick={() => setShowReplyInput(prev => ({ ...prev, [comment._id]: !prev[comment._id] }))}
+                              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                showReplyInput[comment._id] ? 'bg-white/10 text-white' : 'bg-blue-500/5 text-blue-400 hover:bg-blue-500/10'
+                              }`}
+                            >
+                              <FiCornerDownRight /> {showReplyInput[comment._id] ? "Cancel" : "Reply"}
+                            </button>
+                         </div>
+
+                         {/* Inline Reply Input */}
+                         <AnimatePresence>
+                            {showReplyInput[comment._id] && (
+                              <motion.form 
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                onSubmit={(e) => handleReplySubmit(comment._id, e)}
+                                className="mt-6 overflow-hidden"
+                              >
+                               <textarea
+                                  value={replies[comment._id] || ""}
+                                  onChange={(e) => setReplies(prev => ({ ...prev, [comment._id]: e.target.value }))}
+                                  placeholder="Write your reply..."
+                                  className="w-full h-24 bg-black/40 border border-white/5 rounded-2xl p-5 text-xs text-gray-300 focus:border-blue-500/30 outline-none transition-all resize-none mb-3"
+                                />
+                                <button
+                                  type="submit"
+                                  disabled={isReplying || !replies[comment._id]?.trim()}
+                                  className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                                >
+                                  {isReplying ? "Submitting..." : <><span>Post Reply</span> <FiSend /></>}
+                                </button>
+                              </motion.form>
+                            )}
+                         </AnimatePresence>
+                      </div>
+                   </div>
                 </div>
 
-                {/* Reply Section */}
-                <div className="mt-4">
-                  <button
-                    onClick={() => toggleReplyInput(comment._id)}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    {showReplyInput[comment._id] ? "Cancel Reply" : "Reply"}
-                  </button>
-
-                  {showReplyInput[comment._id] && (
-                    <form
-                      onSubmit={(e) => handleReplySubmit(comment._id, e)}
-                      className="mt-4"
-                    >
-                      <textarea
-                        value={replies[comment._id] || ""}
-                        onChange={(e) =>
-                          handleReplyChange(comment._id, e.target.value)
-                        }
-                        rows="3"
-                        className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Write a reply..."
-                      />
-                      <button
-                        type="submit"
-                        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
-                      >
-                        Post Reply
-                      </button>
-                    </form>
-                  )}
-                </div>
-
-                {/* Replies */}
+                {/* Replies Thread */}
                 {comment.replies && comment.replies.length > 0 && (
-                  <div className="mt-6 pl-6 space-y-4 border-l-4 border-blue-200">
+                  <div className="mt-4 pl-12 space-y-4">
                     {comment.replies
                       .slice(0, visibleReplies[comment._id] || 3)
                       .map((reply) => (
-                        <div key={reply._id} className="flex gap-4">
-                          <img
-                            src={`https://ui-avatars.com/api/?name=${reply.user.username}`}
-                            alt="avatar"
-                            className="w-10 h-10 rounded-full"
-                          />
-                          <div className="flex-1 bg-gray-50 rounded-md p-3">
-                            <div className="text-sm font-semibold text-gray-800">
-                              {reply.user.username}
-                            </div>
-                            <p className="text-gray-700">{reply.replyText}</p>
-                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                              <FaRegClock />
-                              {format(new Date(reply.createdAt), "PPPpp")}
-                            </div>
-                          </div>
-                        </div>
+                        <motion.div 
+                          key={reply._id} 
+                          initial={{ x: 20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          className="p-5 rounded-[1.5rem] bg-white/[0.01] border border-white/5 flex items-start gap-4 group/reply"
+                        >
+                           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-white/5 to-white/[0.01] border border-white/10 flex items-center justify-center text-[10px] text-gray-500 font-black shrink-0 italic">
+                             {reply.user?.username?.charAt(0).toUpperCase()}
+                           </div>
+                           <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                 <h5 className="text-[11px] font-black text-gray-300">{reply.user?.username}</h5>
+                                 <span className="text-[9px] text-gray-600 font-mono">{format(new Date(reply.createdAt), "HH:mm")}</span>
+                              </div>
+                              <p className="text-xs text-gray-500 group-hover/reply:text-gray-300 transition-colors leading-relaxed">{reply.replyText}</p>
+                           </div>
+                        </motion.div>
                       ))}
 
-                    {comment.replies.length >
-                      (visibleReplies[comment._id] || 3) && (
+                    {comment.replies.length > (visibleReplies[comment._id] || 3) && (
                       <button
-                        onClick={() => loadMoreReplies(comment._id)}
-                        className="text-sm text-blue-600 hover:underline mt-2"
+                        onClick={() => setVisibleReplies(prev => ({ ...prev, [comment._id]: (prev[comment._id] || 3) + 3 }))}
+                        className="text-[10px] text-blue-500 hover:text-blue-400 font-black uppercase tracking-widest flex items-center gap-2 mt-4 ml-2"
                       >
-                        Load more replies
+                         <FiLayers size={14} /> Show More Replies
                       </button>
                     )}
                   </div>
                 )}
-              </div>
-            </div>
-          ))
-        )}
+              </motion.div>
+            ))
+          )}
+        </motion.div>
       </div>
     </div>
   );

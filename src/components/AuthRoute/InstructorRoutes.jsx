@@ -8,35 +8,24 @@ import { useEffect } from "react";
 import { checkUserAuthStatus } from "../../redux/slices/authSlice";
 
 const InstructorRoutes = ({ children }) => {
-  const dispatch = useDispatch();
-
-  const { isAuthenticated, userProfile } = useSelector((state) => state.auth);
-  useEffect(() => {
-    dispatch(checkUserAuthStatus());
-  }, [isAuthenticated]);
-  //use location
+  const { isAuthenticated, userProfile, loading: reduxLoading } = useSelector((state) => state.auth);
   const location = useLocation();
-  //dispatch
 
-  //react query
-  const { data, isLoading } = useQuery({
+  const { isLoading: queryLoading } = useQuery({
     queryKey: ["userAuth"],
     queryFn: checkUserAuthStatusAPI,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5,
+    enabled: !isAuthenticated,
   });
 
-  if (isLoading) {
+  if (reduxLoading || (queryLoading && !isAuthenticated)) {
     return <AuthCheckingComponent />;
   }
 
-  if (userProfile?.role !== "instructor") {
+  if (!isAuthenticated || userProfile?.role !== "instructor") {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
   return children;
 };
 
