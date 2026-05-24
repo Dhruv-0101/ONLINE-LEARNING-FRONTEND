@@ -74,82 +74,100 @@ const LoginWithPasskey = () => {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-bg-glow glow-1"></div>
-      <div className="auth-bg-glow glow-2"></div>
+    <>
+      <div className="auth-wrapper">
+        <div className="auth-bg-glow glow-1"></div>
+        <div className="auth-bg-glow glow-2"></div>
 
-      <motion.div 
-        className="auth-container"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        style={{ maxWidth: '500px' }} // Slightly narrower for single field
-      >
-        <div className="auth-form-side" style={{ width: '100%' }}>
-          {/* Logo Section */}
-          <motion.div variants={itemVariants} className="mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 group transition-all duration-300">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-all">
-                <FaCubes className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">
-                Skill Buddy
-              </span>
-            </Link>
-          </motion.div>
-
-          <div className="auth-header text-left">
-            <motion.h1 variants={itemVariants} className="flex items-center gap-3">
-              <FiShield className="text-purple-500" /> Two-Step Verification
-            </motion.h1>
-            <motion.p variants={itemVariants} className="text-gray-400 text-sm mt-2">
-              Use your registered passkey to securely access your account.
-            </motion.p>
-          </div>
-
-          {loginPasskeyMutation.isError && (
-            <AlertMessage
-              type="error"
-              message={loginPasskeyMutation.error?.response?.data?.message || "Verification Failed"}
-            />
-          )}
-
-          <form onSubmit={formik.handleSubmit} className="space-y-4 mt-8">
-            <motion.div className="input-group" variants={itemVariants}>
-              <div className={`input-wrapper ${formik.touched.username && formik.errors.username ? 'border-red-500/50' : ''}`}>
-                <FiUser className="input-icon" />
-                <input
-                  type="text"
-                  {...formik.getFieldProps("username")}
-                  placeholder="Enter Username"
-                />
-              </div>
-              {formik.touched.username && formik.errors.username && (
-                <div className="err-msg">{formik.errors.username}</div>
-              )}
+        <motion.div 
+          className="auth-container"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          style={{ maxWidth: '500px' }} // Slightly narrower for single field
+        >
+          <div className="auth-form-side" style={{ width: '100%' }}>
+            {/* Logo Section */}
+            <motion.div variants={itemVariants} className="mb-8">
+              <Link to="/" className="inline-flex items-center gap-2 group transition-all duration-300">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-all">
+                  <FaCubes className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-lg font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">
+                  Skill Buddy
+                </span>
+              </Link>
             </motion.div>
 
-            <motion.button 
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="submit-btn flex items-center justify-center gap-2" 
-              type="submit"
-              disabled={loginPasskeyMutation.isPending}
-            >
-              <FiUnlock />
-              {loginPasskeyMutation.isPending ? "Verifying..." : "Verify Passkey"}
-            </motion.button>
-          </form>
+            <div className="auth-header text-left">
+              <motion.h1 variants={itemVariants} className="flex items-center gap-3">
+                <FiShield className="text-purple-500" /> Two-Step Verification
+              </motion.h1>
+              <motion.p variants={itemVariants} className="text-gray-400 text-sm mt-2">
+                Use your registered passkey to securely access your account.
+              </motion.p>
+            </div>
 
-          <motion.div className="alt-action mt-6" variants={itemVariants}>
-            <Link to="/login" className="alt-link inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-              <FiArrowLeft /> Back to Standard Login
-            </Link>
-          </motion.div>
+            {loginPasskeyMutation.isError && (
+              <AlertMessage
+                type="error"
+                message={loginPasskeyMutation.error?.response?.data?.message || "Verification Failed"}
+              />
+            )}
+
+            <form onSubmit={formik.handleSubmit} className="space-y-4 mt-8">
+              <motion.div className="input-group" variants={itemVariants}>
+                <div className={`input-wrapper ${formik.touched.username && formik.errors.username ? 'border-red-500/50' : ''}`}>
+                  <FiUser className="input-icon" />
+                  <input
+                    type="text"
+                    {...formik.getFieldProps("username")}
+                    placeholder="Enter Username"
+                  />
+                </div>
+                {formik.touched.username && formik.errors.username && (
+                  <div className="err-msg">{formik.errors.username}</div>
+                )}
+              </motion.div>
+
+              <motion.button 
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="submit-btn flex items-center justify-center gap-2" 
+                type="submit"
+                disabled={loginPasskeyMutation.isPending}
+              >
+                <FiUnlock />
+                {loginPasskeyMutation.isPending ? "Verifying..." : "Verify Passkey"}
+              </motion.button>
+            </form>
+
+            <motion.div className="alt-action mt-6" variants={itemVariants}>
+              <Link to="/login" className="alt-link inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <FiArrowLeft /> Back to Standard Login
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Full-screen Loading Overlay */}
+      {loginPasskeyMutation.isPending && (
+        <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#0B0F1A]/85 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-4 p-8 bg-[#161B2B] border border-white/10 rounded-2xl shadow-2xl max-w-sm text-center">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-t-purple-500 animate-spin"></div>
+            </div>
+            <h3 className="text-xl font-bold text-white mt-2">Authenticating</h3>
+            <p className="text-sm text-gray-400">
+              Please authenticate using your security passkey on your device prompts. Do not close or refresh this page.
+            </p>
+          </div>
         </div>
-      </motion.div>
-    </div>
+      )}
+    </>
   );
 };
 
