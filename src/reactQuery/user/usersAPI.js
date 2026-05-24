@@ -56,10 +56,7 @@ export const registerInstructorAPI = async (userData) => {
 export const loginAPI = async (userData) => {
   const response = await axios.post(
     `${BASE_URL}/users/login`,
-    {
-      email: userData?.email,
-      password: userData?.password,
-    },
+    userData,
     {
       withCredentials: true,
     },

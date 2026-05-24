@@ -41,7 +41,7 @@ const Login = () => {
     initialValues: { email: "", password: "" },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      mutation.mutateAsync(values).then((data) => {
+      mutation.mutateAsync({ ...values, role: "student" }).then((data) => {
         if (data) {
           navigate("/student-dashboard");
           dispatch(checkUserAuthStatus());

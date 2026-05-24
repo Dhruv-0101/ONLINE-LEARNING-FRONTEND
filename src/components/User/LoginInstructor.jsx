@@ -37,7 +37,7 @@ const LoginInstructor = () => {
     initialValues: { email: "", password: "" },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      mutation.mutateAsync(values).then((data) => {
+      mutation.mutateAsync({ ...values, role: "instructor" }).then((data) => {
         if (data) {
           dispatch(checkUserAuthStatus());
           navigate("/instructor-courses");
