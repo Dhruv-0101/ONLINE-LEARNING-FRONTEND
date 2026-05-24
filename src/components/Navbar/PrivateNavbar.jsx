@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -19,6 +19,7 @@ export default function PrivateNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   if (!isAuthenticated || (userProfile?.role !== "student" && userProfile?.role !== "admin")) {
     return null;
@@ -37,7 +38,7 @@ export default function PrivateNavbar() {
     mutationKey: ["register-passkey"],
     mutationFn: registerPassKey,
     onSuccess: () => {
-      alert("Passkey registered successfully! You can now use 2FA.");
+      setShowSuccessModal(true);
     },
     onError: (error) => {
       console.error("Error registering passkey:", error);
@@ -52,106 +53,149 @@ export default function PrivateNavbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <Disclosure as="nav" className="fixed top-0 left-0 right-0 z-[100] bg-[#0B0F1A]/80 backdrop-blur-xl border-b border-white/5">
-      {({ open }) => (
-        <>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-20 justify-between items-center">
-              <div className="flex items-center gap-8">
-                <Link to="/" className="flex flex-shrink-0 items-center gap-2 group transition-all">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-all">
-                    <FaCubes className="h-6 w-6 text-white" />
-                  </div>
-                  <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">
-                    Skill Buddy <span className="text-[10px] text-blue-400 uppercase tracking-widest ml-1 font-black">Student</span>
-                  </span>
-                </Link>
+    <>
+      <Disclosure as="nav" className="fixed top-0 left-0 right-0 z-[100] bg-[#0B0F1A]/80 backdrop-blur-xl border-b border-white/5">
+        {({ open }) => (
+          <>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="flex h-20 justify-between items-center">
+                <div className="flex items-center gap-8">
+                  <Link to="/" className="flex flex-shrink-0 items-center gap-2 group transition-all">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-all">
+                      <FaCubes className="h-6 w-6 text-white" />
+                    </div>
+                    <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">
+                      Skill Buddy <span className="text-[10px] text-blue-400 uppercase tracking-widest ml-1 font-black">Student</span>
+                    </span>
+                  </Link>
 
-                <div className="hidden md:flex md:space-x-1">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.name}
-                      to={link.href}
-                      className={classNames(
-                        isActive(link.href) 
-                          ? "text-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]" 
-                          : "text-gray-400 hover:text-white hover:bg-white/5",
-                        "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center"
-                      )}
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
+                  <div className="hidden md:flex md:space-x-1">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.name}
+                        to={link.href}
+                        className={classNames(
+                          isActive(link.href) 
+                            ? "text-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]" 
+                            : "text-gray-400 hover:text-white hover:bg-white/5",
+                          "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center"
+                        )}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <button
+                    onClick={() => registerPasskeyMutation.mutate()}
+                    className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold hover:bg-blue-500/20 transition-all active:scale-95"
+                    title="Secure Your Login"
+                  >
+                    <FiShield className="text-lg" />
+                    <span>Passkey Protection</span>
+                  </button>
+
+                  <button
+                    onClick={logoutHandler}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold hover:bg-red-500/20 transition-all duration-300 active:scale-95"
+                  >
+                    <IoLogOutOutline className="text-lg" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
+
+                  <div className="-mr-2 flex items-center md:hidden">
+                    <Disclosure.Button className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                      {open ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+                    </Disclosure.Button>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center gap-2 sm:gap-4">
-                <button
-                  onClick={() => registerPasskeyMutation.mutate()}
-                  className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold hover:bg-blue-500/20 transition-all active:scale-95"
-                  title="Secure Your Login"
-                >
-                  <FiShield className="text-lg" />
-                  <span>Passkey Protection</span>
-                </button>
-
-                <button
-                  onClick={logoutHandler}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold hover:bg-red-500/20 transition-all duration-300 active:scale-95"
-                >
-                  <IoLogOutOutline className="text-lg" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
-
-                <div className="-mr-2 flex items-center md:hidden">
-                  <Disclosure.Button className="inline-flex items-center justify-center rounded-lg p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-all">
-                    {open ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+            <Disclosure.Panel className="md:hidden bg-[#0B0F1A] border-b border-white/5 pb-4">
+              <div className="space-y-1 px-4 pt-2">
+                {navLinks.map((link) => (
+                  <Disclosure.Button
+                    key={link.name}
+                    as={Link}
+                    to={link.href}
+                    className={classNames(
+                      isActive(link.href)
+                        ? "text-white bg-white/10"
+                        : "text-gray-400 hover:text-white hover:bg-white/5",
+                      "block rounded-lg px-3 py-3 text-base font-medium"
+                    )}
+                  >
+                    {link.name}
                   </Disclosure.Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <Disclosure.Panel className="md:hidden bg-[#0B0F1A] border-b border-white/5 pb-4">
-            <div className="space-y-1 px-4 pt-2">
-              {navLinks.map((link) => (
+                ))}
                 <Disclosure.Button
-                  key={link.name}
-                  as={Link}
-                  to={link.href}
-                  className={classNames(
-                    isActive(link.href)
-                      ? "text-white bg-white/10"
-                      : "text-gray-400 hover:text-white hover:bg-white/5",
-                    "block rounded-lg px-3 py-3 text-base font-medium"
-                  )}
+                  as="button"
+                  onClick={() => registerPasskeyMutation.mutate()}
+                  className="w-full text-left rounded-lg px-3 py-3 text-base font-medium text-blue-400 hover:bg-blue-500/5"
                 >
-                  {link.name}
+                  Enable Passkey Protection
                 </Disclosure.Button>
-              ))}
-              <Disclosure.Button
-                as="button"
-                onClick={() => registerPasskeyMutation.mutate()}
-                className="w-full text-left rounded-lg px-3 py-3 text-base font-medium text-blue-400 hover:bg-blue-500/5"
-              >
-                Enable Passkey Protection
-              </Disclosure.Button>
-              
-              <div className="pt-4 mt-4 border-t border-white/5">
-                <div className="flex items-center gap-3 px-3 py-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold border border-blue-500/30">
-                    {userProfile?.username?.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-bold">{userProfile?.username}</p>
-                    <p className="text-gray-500 text-xs">{userProfile?.email}</p>
+                
+                <div className="pt-4 mt-4 border-t border-white/5">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold border border-blue-500/30">
+                      {userProfile?.username?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-bold">{userProfile?.username}</p>
+                      <p className="text-gray-500 text-xs">{userProfile?.email}</p>
+                    </div>
                   </div>
                 </div>
               </div>
+            </Disclosure.Panel>
+          </>
+        )}
+      </Disclosure>
+
+      {/* Full-screen Loading Overlay */}
+      {registerPasskeyMutation.isPending && (
+        <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#0B0F1A]/85 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-4 p-8 bg-[#161B2B] border border-white/10 rounded-2xl shadow-2xl max-w-sm text-center">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-t-blue-500 animate-spin"></div>
             </div>
-          </Disclosure.Panel>
-        </>
+            <h3 className="text-xl font-bold text-white mt-2">Setting Up 2FA</h3>
+            <p className="text-sm text-gray-400">
+              Please follow the prompt on your browser/device to configure your security passkey. Do not close or refresh this page.
+            </p>
+          </div>
+        </div>
       )}
-    </Disclosure>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-[#0B0F1A]/85 backdrop-blur-sm">
+          <div className="w-full max-w-md p-6 bg-[#161B2B] border border-green-500/20 rounded-2xl shadow-2xl shadow-green-500/5 text-center transform transition-all">
+            <div className="w-16 h-16 mx-auto bg-green-500/10 border border-green-500/20 rounded-full flex items-center justify-center text-green-400 mb-4 animate-bounce">
+              <FiShield className="text-3xl" />
+            </div>
+            
+            <h3 className="text-2xl font-black bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent mb-2">
+              2FA Enabled Successfully
+            </h3>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              Your account is now secured with Passkey Protection. You will be prompted to authenticate using your device passkey upon logging in next time.
+            </p>
+            
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold hover:brightness-110 active:scale-[0.98] transition-all"
+            >
+              Got it, thanks!
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
